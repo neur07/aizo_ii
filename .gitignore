@@ -1,0 +1,53 @@
+build/
+data/results*
+data/data*
+data/archive*
+testing*
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Caches
+.caches/
+
+# Virtual environment
+venv/
+env/
+.venv/
+pipenv/
+
+# Logs
+*.log
+
+# Local development settings
+local_settings.py
+
+# Database
+db.sqlite3
+
+# Media files
+media/
+
+# Static files
+staticfiles/
+
+# IDE settings
+.vscode/
+.idea/
+*.pycharm/
+
+# Compiled Python files
+*.pyc
+
+# Docker Compose
+docker-compose.yml
+docker-compose.override.yml
+.env
+
+# Miscellaneous
+*.swp
+.DS_Store
+Thumbs.db
