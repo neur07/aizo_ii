@@ -1,5 +1,6 @@
 #include "utils.h" // #include <iostream>
 #include "UndirectedIMGraph.h" // #include <iostream> <fstream> <sstream>
+#include "UndirectedALGraph.h" // #include <iostream> <fstream> <sstream>
 
 using namespace std;
 
@@ -16,6 +17,8 @@ void MST_MENU(){
     int mst_choice = 0;
     UndirectedIMGraph IMGraph;
     IMGraph.loadFromFile("input.txt");
+    UndirectedALGraph ALGraph;
+    ALGraph.loadFromFile("input.txt");
     
     while(mst_choice != 6){
         cout << endl;
@@ -28,27 +31,28 @@ void MST_MENU(){
         mst_choice = choice_input();
 
         if(mst_choice == 1){
-            // Dwa nowe grafy
+            // Dwa nowe grafy (z pliku bądź losowe o podanych parametrach)
         }
-        if(mst_choice == 2){
+        else if(mst_choice == 2){
             // Wyswietlenie obu reprezentacji
             IMGraph.printIncidenceMatrix();
+            ALGraph.printGraph();
         }
-        if(mst_choice == 3){
+        else if(mst_choice == 3){
             // Wykonanie porownawcze
             IMGraph.primMST();
         }
-        if(mst_choice == 4){
+        else if(mst_choice == 4){
             // Wykonanie porownawcze
             IMGraph.kruskalMST();
         }
-        if(mst_choice == 5){
+        else if(mst_choice == 5){
             // Rozne stopnie wypelnienia
 
             // 
         }
-        if(mst_choice == 6) cout << "Zamykanie programu..." << endl;
-        else cout << "Wybrano nieprawidłową opcję. Sprobuj ponownie." << endl;
+        else if(mst_choice == 6) break;
+        else cout << endl << "Wybrano nieprawidłową opcję. Sprobuj ponownie." << endl;
     }
 }
 

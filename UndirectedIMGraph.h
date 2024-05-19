@@ -52,6 +52,7 @@ public:
     }
 
     void printIncidenceMatrix() const {
+        cout << endl << "Graf nieskierowany (Macierz incydencji):" << endl << endl;
         for (int i = 0; i < vertices; ++i) {
             for (int j = 0; j < edges; ++j) {
                 std::cout << incidenceMatrix[i][j] << " ";
