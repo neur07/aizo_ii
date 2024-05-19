@@ -1,6 +1,7 @@
 #include "utils.h" // #include <iostream>
 #include "UndirectedIMGraph.h" // #include <iostream> <fstream> <sstream>
 #include "UndirectedALGraph.h" // #include <iostream> <fstream> <sstream>
+#include <chrono>
 
 using namespace std;
 
@@ -16,9 +17,7 @@ void MST_MENU(){
     // Inicjalizacja obu reprezentacji grafow
     int mst_choice = 0;
     UndirectedIMGraph IMGraph;
-    IMGraph.loadFromFile("input.txt");
     UndirectedALGraph ALGraph;
-    ALGraph.loadFromFile("input.txt");
     
     while(mst_choice != 6){
         cout << endl;
@@ -31,20 +30,32 @@ void MST_MENU(){
         mst_choice = choice_input();
 
         if(mst_choice == 1){
-            // Dwa nowe grafy (z pliku bądź losowe o podanych parametrach)
+            // Z pliku o wybranej nazwie
+
+            string name = str_choice_input("Nazwa pliku");
+            IMGraph.loadFromFile(name + ".txt");
+            ALGraph.loadFromFile(name + ".txt");
+
+            // Losowe o podanych parametrach [Niedostępne]
         }
         else if(mst_choice == 2){
             // Wyswietlenie obu reprezentacji
-            IMGraph.printIncidenceMatrix();
+            IMGraph.printGraph();
             ALGraph.printGraph();
         }
         else if(mst_choice == 3){
             // Wykonanie porownawcze
+            auto im_start = chrono::high_resolution_clock::now();
             IMGraph.primMST();
+            auto im_stop = chrono::high_resolution_clock::now();
+            cout << endl << "Prim dla Macierzy Incydencji zajął " << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
         }
         else if(mst_choice == 4){
             // Wykonanie porownawcze
+            auto im_start = chrono::high_resolution_clock::now();
             IMGraph.kruskalMST();
+            auto im_stop = chrono::high_resolution_clock::now();
+            cout << endl << "Kruskal dla Macierzy Incydencji zajął " << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms";
         }
         else if(mst_choice == 5){
             // Rozne stopnie wypelnienia

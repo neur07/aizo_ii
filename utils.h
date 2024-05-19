@@ -2,9 +2,16 @@
 
 using namespace std;
 
-int choice_input() {
+int choice_input(string prompt = "Wybor") {
     int option;
-    cout << endl << "Wybor: ";
+    cout << endl << prompt << ": ";
+    cin >> option;
+    return option;
+}
+
+string str_choice_input(string prompt = "Wybor") {
+    string option;
+    cout << endl << prompt << ": ";
     cin >> option;
     return option;
 }

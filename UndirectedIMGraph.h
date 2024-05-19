@@ -3,6 +3,7 @@
 #include <sstream>
 #include <climits>
 
+using namespace std;
 class UndirectedIMGraph {
 private:
     int** incidenceMatrix;
@@ -31,10 +32,10 @@ public:
         }
     }
 
-    void loadFromFile(const std::string& filename) {
-        std::ifstream file(filename);
+    void loadFromFile(const string& filename) {
+        ifstream file(filename);
         if (!file.is_open()) {
-            std::cerr << "Unable to open file!" << std::endl;
+            cerr << "Unable to open file!" << endl;
             return;
         }
 
@@ -51,13 +52,13 @@ public:
         }
     }
 
-    void printIncidenceMatrix() const {
+    void printGraph() const {
         cout << endl << "Graf nieskierowany (Macierz incydencji):" << endl << endl;
         for (int i = 0; i < vertices; ++i) {
             for (int j = 0; j < edges; ++j) {
-                std::cout << incidenceMatrix[i][j] << " ";
+                cout << incidenceMatrix[i][j] << " ";
             }
-            std::cout << std::endl;
+            cout << endl;
         }
     }
 
@@ -107,9 +108,9 @@ public:
     }
 
     void printMST(int* parent) const {
-        std::cout << "Edge \tWeight\n";
+        cout << "Edge \tWeight\n";
         for (int i = 1; i < vertices; ++i) {
-            std::cout << parent[i] << " - " << i << "\t" << incidenceMatrix[i][parent[i]] << "\n";
+            cout << parent[i] << " - " << i << "\t" << incidenceMatrix[i][parent[i]] << "\n";
         }
     }
 
@@ -141,7 +142,7 @@ public:
             vRep = find(parent, v);
 
             if (uRep != vRep) {
-                std::cout << u << " - " << v << "\t" << incidenceMatrix[2][edgeIndex] << std::endl;
+                cout << u << " - " << v << "\t" << incidenceMatrix[2][edgeIndex] << endl;
                 edgesIncluded++;
                 Union(parent, rank, uRep, vRep);
             }
