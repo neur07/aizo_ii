@@ -19,3 +19,9 @@ string str_choice_input(string prompt = "Wybor") {
 bool between(int x, int a, int b){
     return x >= a && x <= b;
 }
+
+// [Niedostępna] funkcja logująca kolejne operacje
+// auto log(int id, int ops, string name){
+//     cout << endl << "[" << id << "/" << ops << "] " << name;
+//     return chrono::high_resolution_clock::now();
+// }

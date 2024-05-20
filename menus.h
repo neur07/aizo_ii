@@ -33,29 +33,40 @@ void MST_MENU(){
             // Z pliku o wybranej nazwie
 
             string name = str_choice_input("Nazwa pliku");
-            IMGraph.loadFromFile(name + ".txt");
-            ALGraph.loadFromFile(name + ".txt");
+            IMGraph.load_from_file(name + ".txt");
+            ALGraph.load_from_file(name + ".txt");
 
             // Losowe o podanych parametrach [Niedostępne]
         }
         else if(mst_choice == 2){
             // Wyswietlenie obu reprezentacji
-            IMGraph.printGraph();
-            ALGraph.printGraph();
+            IMGraph.print_graph();
+            ALGraph.print_graph();
         }
         else if(mst_choice == 3){
             // Wykonanie porownawcze
             auto im_start = chrono::high_resolution_clock::now();
-            IMGraph.primMST();
+            // IMGraph.prim_mst();
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Prim dla Macierzy Incydencji zajął " << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
+
+            auto al_start = chrono::high_resolution_clock::now();
+            // ALGraph.prim_mst();
+            auto al_stop = chrono::high_resolution_clock::now();
+            cout << endl << "Prim dla Listy Sąsiedztwa zajął " << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
         }
         else if(mst_choice == 4){
             // Wykonanie porownawcze
             auto im_start = chrono::high_resolution_clock::now();
-            IMGraph.kruskalMST();
+            // IMGraph.kruskal_mst();
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Kruskal dla Macierzy Incydencji zajął " << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms";
+            
+            auto al_start = chrono::high_resolution_clock::now();
+            // ALGraph.kruskal_mst();
+            auto al_stop = chrono::high_resolution_clock::now();
+            cout << endl << "Kruskal dla Listy Sąsiedztwa zajął " << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
+        
         }
         else if(mst_choice == 5){
             // Rozne stopnie wypelnienia

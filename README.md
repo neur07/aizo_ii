@@ -1,31 +1,59 @@
 # II Projekt AIZO. Kamil Sobierajski 2024.
 
-## 2024/05/20
+## Wymagania na ocenę 5.5
 
-- Organizacja menu
-- Implementacja obu nieskierowanych reprezentacji grafów
-- Pobieranie grafu z pliku
-- Generowanie losowe grafu spójnego
-- Wyświetlanie grafu
-- Funkcja benchmark
-- MST
+Program implementujący dwie reprezentacje grafu:
 
-## 2024/05/27
+- Macierz Incydencji
+- Lista Sąsiedztwa
 
+Dla każdej z nich:
+
+- algorytm Prima oraz algorytm Kruskala,
+- algorytm Dijkstry oraz algorytm Forda-Bellmana,
+- algorytm Forda-Fulkersona
+
+Ponadto:
+
+- Ograniczyć wykorzystanie bibliotek, całkowicie wykluczyć STL
+- umożliwić tworzenie grafu spójnego na podstawie pliku oraz danych losowych (przy podanej liczbie wierzchołków oraz gęstości wypełnienia)
+- zaimplementować precyzyjne odmierzanie czasu, na podstawie których powstanie analiza algorytmów w sprawozdaniu
+- umożliwić wyświetlenie podglądu zawartości grafu dla obu reprezentacji
+- dynamiczna alokacja pamięci
+
+## Do zrealizowania
+
+### 2024/06/03
+
+- Generowanie losowego grafu spójnego
+- (1) MST
 - Implementacja obu skierowanych reprezentacji grafów
-- shortest path
+- (2) shortest path
 - automatyczne testy + wykresy (folder z input-grafami, z wykresami, z wynikami w excel-friendly formacie - tabela przestawna)
-- ford-fulkerson ([edmonds-karp algorithm](https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm))
-- readme
+- (3) ford-fulkerson ([edmonds-karp algorithm](https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm))
+- plan pomiarów
+- sprawozdanie
+- zoptymalizować dyrektywy include
 
-## Reprezentacja grafu
+## Teoria
+
+### Ogólne parametry
+
+| Parametr                        |            wartość |
+| ------------------------------- | -----------------: |
+| Liczba wierzchołków             |                  n |
+| Min liczba krawędzi grafu spój. |       $e = n - 1 $ |
+| Liczba krawędzi w grafie pełnym |    $e_p = n(n-1) $ |
+| Stopień wypełnienia             | $\frac{e}{n(n-1)}$ |
 
 ### Złożoności pamięciowe
 
-- Lista krawędzi ($2E$)
-- Macierz sąsiedztwa ($V^2$)
-- Lista sąsiedztwa ($V \cdot d$)
-- Macierz incydencji ($V \cdot E$)
+| Reprezentacja grafu | Złożoność pamięciowa | Złożoność czasowa |
+| ------------------- | -------------------: | ----------------: |
+| Lista krawędzi      |                 $2E$ |                 - |
+| Macierz sąsiedztwa  |                $V^2$ |                 - |
+| Lista sąsiedztwa    |          $V \cdot d$ |                 - |
+| Macierz incydencji  |          $V \cdot E$ |                 - |
 
 ### Lista sąsiedztwa
 
@@ -43,20 +71,3 @@ $
 $
 
 Implementacja dynamicznej Macierzy Incydencji w C++ przy wykorzystniu wskaźników na tablicę wskaźników ([wytłumaczone w tym filmie](https://www.youtube.com/watch?v=mGl9LO-je3o))
-
-### Ogólne parametry
-
-- Liczba wierzchołków
-- Liczba krawędzi
-- Max liczba krawędzi
-- Stopień wypełnienia
-- Wagi poszczególnych krawędzi
-- Maksymalny stopień wierzchołków (ewentualnie średni)
-
-## MST (Minimum Spanning Tree)
-
-| Parametr                        | wartość |
-| ------------------------------- | ------- |
-| Liczba wierzchołków             | n       |
-| Liczba krawędzi                 | n - 1   |
-| Liczba krawędzi w grafie pełnym | n(n-1)  |
