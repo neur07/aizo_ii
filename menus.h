@@ -1,11 +1,13 @@
-#include "utils.h" // #include <iostream>
-#include "UndirectedIMGraph.h" // #include <iostream> <fstream> <sstream>
+#pragma once
+#include "IMGraph.h" // #include <iostream> <fstream> <sstream>
 #include "ALGraph.h"
 #include <chrono>
 
 using namespace std;
 
 void problem_selection(){
+
+    printsep("Problem:");
     cout << endl;
     cout << "1) Minimum Spanning Tree (MST)" << endl;
     cout << "2) Shortest Path [Niedostępne]" << endl;
@@ -16,10 +18,11 @@ void problem_selection(){
 void MST_MENU(){
     // Inicjalizacja obu reprezentacji grafow
     int mst_choice = 0;
-    UndirectedIMGraph IMGraph;
+    IMGraph im_graph;
     ALGraph al_graph;
     
     while(mst_choice != 6){
+        printsep("Problem > MST:");
         cout << endl;
         cout << "1) Nowy graf" << endl;
         cout << "2) Wyświetl graf" << endl;
@@ -33,20 +36,20 @@ void MST_MENU(){
             // Z pliku o wybranej nazwie
 
             string name = str_choice_input("Nazwa pliku");
-            IMGraph.load_from_file(name + ".txt");
+            im_graph.load_from_file(name + ".txt");
             al_graph.load_from_file(name + ".txt");
 
             // Losowe o podanych parametrach [Niedostępne]
         }
         else if(mst_choice == 2){
             // Wyswietlenie obu reprezentacji
-            IMGraph.print_graph();
+            im_graph.print_graph();
             al_graph.print_graph();
         }
         else if(mst_choice == 3){
             // Wykonanie porownawcze
             auto im_start = chrono::high_resolution_clock::now();
-            // IMGraph.prim_mst();
+            // im_graph.prim_mst();
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Prim dla Macierzy Incydencji zajął " << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
 
@@ -58,7 +61,7 @@ void MST_MENU(){
         else if(mst_choice == 4){
             // Wykonanie porownawcze
             auto im_start = chrono::high_resolution_clock::now();
-            // IMGraph.kruskal_mst();
+            // im_graph.kruskal_mst();
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Kruskal dla Macierzy Incydencji zajął " << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms";
             

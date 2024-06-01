@@ -3,8 +3,7 @@
 using namespace std;
 
 int main() {
-    cout << endl;
-    cout << "II Projekt AIZO. Kamil Sobierajski 2024." << endl;
+    printf("\nII Projekt AIZO. Kamil Sobierajski 2024.\n");
     int menu_choice = 0;
     while(menu_choice != 4){
         problem_selection();
@@ -13,8 +12,8 @@ int main() {
         if(menu_choice == 1) MST_MENU();
         // else if(menu_choice == 2) SP_MENU();
         // else if(menu_choice == 3) MF_MENU();
-        else if(menu_choice == 4) cout << endl << "Zamykanie programu..." << endl;
-        else cout << endl << "Wybrano nieprawidłową opcję. Sprobuj ponownie." << endl;
+        else if(menu_choice == 4) printsep("Zamykanie programu...");
+        else printsep("Wybrano nieprawidłową opcję. Sprobuj ponownie.");
     }
     return 0;
 }

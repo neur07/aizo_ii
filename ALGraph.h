@@ -1,6 +1,8 @@
+#pragma once
 #include <iostream>
 #include <fstream>
 #include "Edges.h"
+#include "utils.h" // #include <iostream>
 
 class ALGraph {
     Edges** adjacency_list;
@@ -66,5 +68,6 @@ class ALGraph {
                 if(!directed) add_edge(end, start, weight);
             }
         }
+        printsep("Pomyślnie załadowano Listę sąsiedztwa");
     }
 };

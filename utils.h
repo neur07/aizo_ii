@@ -1,6 +1,11 @@
+#pragma once
 #include <iostream>
 
 using namespace std;
+
+void printsep(const char* s) {
+    printf("\n%s\n", s);
+}
 
 int choice_input(string prompt = "Wybor") {
     int option;

@@ -1,14 +1,17 @@
+#pragma once
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <climits>
+#include "utils.h" // #include <iostream>
 
 using namespace std;
 
-class UndirectedIMGraph {
+class IMGraph {
     int** incidence_matrix;
     int edges;
     int vertices;
+    bool directed;
 
     // Alokacja macierzy; wierzchołki - wiersze, krawędzie - kolumny
     void allocate_matrix() {
@@ -23,10 +26,10 @@ class UndirectedIMGraph {
 
     public:
         // Domyślnie pusty graf
-        UndirectedIMGraph() : incidence_matrix(nullptr), edges(0), vertices(0) {}
+        IMGraph(bool dir = false) : incidence_matrix(nullptr), edges(0), vertices(0), directed(dir) {}
 
         // Zwolnienie pamięci
-        ~UndirectedIMGraph() {
+        ~IMGraph() {
             if (incidence_matrix) {
                 for (int i = 0; i < vertices; ++i) {
                     delete[] incidence_matrix[i];
@@ -56,14 +59,15 @@ class UndirectedIMGraph {
                 file >> start >> end >> weight;
                 // Weryfikacja poprawności wierzchołkow
                 if (start >= 0 && start < vertices && end >= 0 && end < vertices) {
-                    incidence_matrix[start][i] = weight;
+                    incidence_matrix[start][i] = (directed ? -1 : 1) * weight;
                     incidence_matrix[end][i] = weight;
                 }
             }
+            printsep("Pomyślnie załadowano Macierz incydencji");
         }
 
         void print_graph() const {
-            cout << endl << "Graf nieskierowany (Macierz incydencji):" << endl << endl;
+            printf("\nGraf %sskierowany (Macierz incydencji):\n\n", directed ? "" : "nie");
             printf("    ");
             for (int i = 1; i <= edges; ++i) printf("%3d ", i);
             cout << endl;
