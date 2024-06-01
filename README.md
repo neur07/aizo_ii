@@ -23,6 +23,15 @@ Ponadto:
 
 ## Do zrealizowania
 
+### Todo
+
+- Sprawdzenie obecnej implementacji reprezentacji grafu
+- Generowanie losowego grafu pełnego dla obu reprezentacji
+- stopnie wypełnienia
+- prawidłowe MST
+- grafy skierowane
+- prawidłowe shortest path
+
 ### 2024/06/03
 
 - Generowanie losowego grafu spójnego

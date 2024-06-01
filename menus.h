@@ -1,6 +1,6 @@
 #include "utils.h" // #include <iostream>
 #include "UndirectedIMGraph.h" // #include <iostream> <fstream> <sstream>
-#include "UndirectedALGraph.h" // #include <iostream> <fstream> <sstream>
+#include "ALGraph.h"
 #include <chrono>
 
 using namespace std;
@@ -17,7 +17,7 @@ void MST_MENU(){
     // Inicjalizacja obu reprezentacji grafow
     int mst_choice = 0;
     UndirectedIMGraph IMGraph;
-    UndirectedALGraph ALGraph;
+    ALGraph al_graph;
     
     while(mst_choice != 6){
         cout << endl;
@@ -34,14 +34,14 @@ void MST_MENU(){
 
             string name = str_choice_input("Nazwa pliku");
             IMGraph.load_from_file(name + ".txt");
-            ALGraph.load_from_file(name + ".txt");
+            al_graph.load_from_file(name + ".txt");
 
             // Losowe o podanych parametrach [Niedostępne]
         }
         else if(mst_choice == 2){
             // Wyswietlenie obu reprezentacji
             IMGraph.print_graph();
-            ALGraph.print_graph();
+            al_graph.print_graph();
         }
         else if(mst_choice == 3){
             // Wykonanie porownawcze
@@ -51,7 +51,7 @@ void MST_MENU(){
             cout << endl << "Prim dla Macierzy Incydencji zajął " << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
 
             auto al_start = chrono::high_resolution_clock::now();
-            // ALGraph.prim_mst();
+            // al_graph.prim_mst();
             auto al_stop = chrono::high_resolution_clock::now();
             cout << endl << "Prim dla Listy Sąsiedztwa zajął " << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
         }
@@ -63,7 +63,7 @@ void MST_MENU(){
             cout << endl << "Kruskal dla Macierzy Incydencji zajął " << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms";
             
             auto al_start = chrono::high_resolution_clock::now();
-            // ALGraph.kruskal_mst();
+            // al_graph.kruskal_mst();
             auto al_stop = chrono::high_resolution_clock::now();
             cout << endl << "Kruskal dla Listy Sąsiedztwa zajął " << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
         
