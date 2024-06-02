@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(MyProject)
 
-add_executable(scnd_project main.cpp menus.h utils.h IMGraph.h ALGraph.h Edges.h)
+add_executable(scnd_project src/main.cpp src/menus.h utils/utils.cpp graph/IMGraph.cpp graph/ALGraph.cpp graph/Edges.cpp)
 
-target_include_directories(scnd_project PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(scnd_project PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/graph ${CMAKE_CURRENT_SOURCE_DIR}/utils)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)

@@ -36,8 +36,8 @@ void MST_MENU(){
             // Z pliku o wybranej nazwie
 
             string name = str_choice_input("Nazwa pliku");
-            im_graph.load_from_file(name + ".txt");
-            al_graph.load_from_file(name + ".txt");
+            im_graph.load_from_file("inputs/" + name + ".txt");
+            al_graph.load_from_file("inputs/" + name + ".txt");
 
             // Losowe o podanych parametrach [Niedostępne]
         }
