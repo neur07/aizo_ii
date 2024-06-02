@@ -34,13 +34,28 @@ void MST_MENU(){
         mst_choice = choice_input();
 
         if(mst_choice == 1){
-            // Z pliku o wybranej nazwie
-
-            string name = str_choice_input("Nazwa pliku");
-            im_graph.load_from_file("inputs/" + name + ".txt");
-            al_graph.load_from_file("inputs/" + name + ".txt");
-
-            // Losowe o podanych parametrach [Niedostępne]
+            printsep("Problem > MST > Nowy graf:");
+            cout << endl;
+            cout << "1) Wczytaj z pliku" << endl;
+            cout << "2) Wygeneruj losowy graf" << endl;
+            int graph_src = choice_input();
+            
+            if(graph_src == 1) { 
+                // Z pliku o wybranej nazwie
+                printsep("Problem > MST > Nowy graf > Plik:");
+                string name = str_choice_input("Nazwa pliku");
+                im_graph.load_from_file("inputs/" + name + ".txt");
+                al_graph.load_from_file("inputs/" + name + ".txt");
+            }
+            else{
+                // Losowe o podanych parametrach
+                printsep("Problem > MST > Nowy graf > Losowy:");
+                int vertices = choice_input("Podaj liczbę wierzchołków");
+                int edges = choice_input("Podaj liczbę krawędzi");
+                im_graph.generate_random_graph(vertices, edges);
+                al_graph.generate_random_graph(vertices, edges);
+            }
+            
         }
         else if(mst_choice == 2){
             // Wyswietlenie obu reprezentacji

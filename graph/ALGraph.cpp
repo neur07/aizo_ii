@@ -23,6 +23,9 @@ ALGraph::~ALGraph() {
 void ALGraph::add_edge(int src, int dest, int weight) {
     if (src < vertices && dest < vertices) {
         adjacency_list[src]->add_edge(dest, weight);
+        if (!directed) {
+            adjacency_list[dest]->add_edge(src, weight);
+        }
     }
 }
 
@@ -53,10 +56,33 @@ void ALGraph::load_from_file(const std::string& filename) {
         file >> start >> end >> weight;
         if (start >= 0 && start < vertices && end >= 0 && end < vertices) {
             add_edge(start, end, weight);
-            if (!directed) add_edge(end, start, weight);
         }
     }
     printsep("Pomyślnie załadowano Listę sąsiedztwa");
+}
+
+void ALGraph::generate_random_graph(int v, int e) {
+    vertices = v;
+    directed = false;
+    
+    adjacency_list = new Edges*[vertices];
+    for (int i = 0; i < vertices; ++i) {
+        adjacency_list[i] = new Edges(i);
+    }
+
+    int* src = new int[e];
+    int* dest = new int[e];
+    int* weights = new int[e];
+
+    generate_random_connected_graph(vertices, e, src, dest, weights);
+
+    for (int i = 0; i < e; ++i) {
+        add_edge(src[i], dest[i], weights[i]);
+    }
+
+    delete[] src;
+    delete[] dest;
+    delete[] weights;
 }
 
 int ALGraph::get_vertices() const {

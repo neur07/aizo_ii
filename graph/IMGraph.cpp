@@ -42,6 +42,29 @@ void IMGraph::load_from_file(const std::string& filename) {
     printsep("Pomyślnie załadowano Macierz incydencji");
 }
 
+void IMGraph::generate_random_graph(int v, int e) {
+    vertices = v;
+    edges = e;
+    directed = false;
+
+    allocate_matrix();
+
+    int* src = new int[e];
+    int* dest = new int[e];
+    int* weights = new int[e];
+
+    generate_random_connected_graph(vertices, e, src, dest, weights);
+
+    for (int i = 0; i < e; ++i) {
+        incidence_matrix[src[i]][i] = (directed ? -1 : 1) * weights[i];
+        incidence_matrix[dest[i]][i] = weights[i];
+    }
+
+    delete[] src;
+    delete[] dest;
+    delete[] weights;
+}
+
 void IMGraph::print_graph() const {
     printf("\nGraf %sskierowany (Macierz incydencji):\n\n", directed ? "" : "nie");
     printf("    ");
