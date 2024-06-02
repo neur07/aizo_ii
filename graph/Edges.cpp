@@ -23,10 +23,18 @@ void Edges::add_edge(int dest, int weight) {
     count++;
 }
 
-void Edges::print_edges() {
+void Edges::print_edges() const {
     printf("%2d: ", vertex);
     for (int i = 0; i < count; ++i) {
         printf("%2d -> %2d (w: %d), ", vertex, edges[i].dest, edges[i].weight);
     }
     printf("\n");
+}
+
+Edge* Edges::get_edges() const {
+    return edges;
+}
+
+int Edges::get_count() const {
+    return count;
 }

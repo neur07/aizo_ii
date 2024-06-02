@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <climits>
 #include "utils.h"
 
 class IMGraph {
@@ -18,4 +17,9 @@ public:
     ~IMGraph();
     void load_from_file(const std::string& filename);
     void print_graph() const;
+
+    int get_vertices() const;
+    int get_edges() const;
+    int get_other_vertex(int u, int edge) const;
+    const int* get_incidence_row(int u) const;
 };

@@ -26,7 +26,7 @@ void ALGraph::add_edge(int src, int dest, int weight) {
     }
 }
 
-void ALGraph::print_graph() {
+void ALGraph::print_graph() const {
     printf("\nGraf %sskierowany (Lista sąsiedztwa):\n\n", directed ? "" : "nie");
     for (int i = 0; i < vertices; i++) {
         adjacency_list[i]->print_edges();
@@ -57,4 +57,16 @@ void ALGraph::load_from_file(const std::string& filename) {
         }
     }
     printsep("Pomyślnie załadowano Listę sąsiedztwa");
+}
+
+int ALGraph::get_vertices() const {
+    return vertices;
+}
+
+Edge* ALGraph::get_edges(int u) const {
+    return adjacency_list[u]->get_edges();
+}
+
+int ALGraph::get_edge_count(int u) const {
+    return adjacency_list[u]->get_count();
 }

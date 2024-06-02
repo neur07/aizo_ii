@@ -55,3 +55,24 @@ void IMGraph::print_graph() const {
         std::cout << std::endl;
     }
 }
+
+int IMGraph::get_other_vertex(int u, int edge) const {
+    for (int v = 0; v < vertices; ++v) {
+        if (v != u && incidence_matrix[v][edge] != 0) {
+            return v;
+        }
+    }
+    return -1;
+}
+
+int IMGraph::get_vertices() const {
+    return vertices;
+}
+
+int IMGraph::get_edges() const {
+    return edges;
+}
+
+const int* IMGraph::get_incidence_row(int u) const {
+    return incidence_matrix[u];
+}

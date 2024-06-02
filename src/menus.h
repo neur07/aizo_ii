@@ -2,6 +2,7 @@
 #include "IMGraph.h" // #include <iostream> <fstream> <sstream>
 #include "ALGraph.h"
 #include <chrono>
+#include "MST.h"
 
 using namespace std;
 
@@ -49,24 +50,24 @@ void MST_MENU(){
         else if(mst_choice == 3){
             // Wykonanie porownawcze
             auto im_start = chrono::high_resolution_clock::now();
-            // im_graph.prim_mst();
+            MST::prim(im_graph);
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Prim dla Macierzy Incydencji zajął " << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
 
             auto al_start = chrono::high_resolution_clock::now();
-            // al_graph.prim_mst();
+            MST::prim(al_graph);
             auto al_stop = chrono::high_resolution_clock::now();
             cout << endl << "Prim dla Listy Sąsiedztwa zajął " << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
         }
         else if(mst_choice == 4){
             // Wykonanie porownawcze
             auto im_start = chrono::high_resolution_clock::now();
-            // im_graph.kruskal_mst();
+            MST::kruskal(im_graph);
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Kruskal dla Macierzy Incydencji zajął " << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms";
             
             auto al_start = chrono::high_resolution_clock::now();
-            // al_graph.kruskal_mst();
+            MST::kruskal(al_graph);
             auto al_stop = chrono::high_resolution_clock::now();
             cout << endl << "Kruskal dla Listy Sąsiedztwa zajął " << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
         

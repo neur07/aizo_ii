@@ -1,13 +1,12 @@
 #pragma once
-#include <climits>
-#include <string>
 #include <cstdio>
 
+struct Edge {
+    int dest;
+    int weight;
+};
+
 class Edges {
-    struct Edge {
-        int dest;
-        int weight;
-    };
     int vertex;
     Edge* edges;
     int count;
@@ -16,6 +15,9 @@ class Edges {
 public:
     Edges(int v);
     ~Edges();
+
     void add_edge(int dest, int weight);
-    void print_edges();
+    void print_edges() const;
+    Edge* get_edges() const;
+    int get_count() const;
 };
