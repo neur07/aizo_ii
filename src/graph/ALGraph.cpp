@@ -1,14 +1,7 @@
 #include "ALGraph.h"
 
-ALGraph::ALGraph(int v, bool dir) : vertices(v), directed(dir) {
-    if (v > 0) {
-        adjacency_list = new Edges*[vertices];
-        for (int i = 0; i < vertices; ++i) {
-            adjacency_list[i] = new Edges(i);
-        }
-    } else {
-        adjacency_list = nullptr;
-    }
+ALGraph::ALGraph(bool dir) : directed(dir) {
+    adjacency_list = nullptr;
 }
 
 ALGraph::~ALGraph() {
@@ -63,7 +56,6 @@ void ALGraph::load_from_file(const std::string& filename) {
 
 void ALGraph::generate_random_graph(int v, int e) {
     vertices = v;
-    directed = false;
     
     adjacency_list = new Edges*[vertices];
     for (int i = 0; i < vertices; ++i) {

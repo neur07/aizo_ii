@@ -45,7 +45,6 @@ void IMGraph::load_from_file(const std::string& filename) {
 void IMGraph::generate_random_graph(int v, int e) {
     vertices = v;
     edges = e;
-    directed = false;
 
     allocate_matrix();
 

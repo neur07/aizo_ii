@@ -54,7 +54,7 @@ void generate_random_connected_graph(int vertices, int edges, int* src, int* des
             if (!exists) {
                 src[edge_count] = u;
                 dest[edge_count] = v;
-                weights[edge_count] = rand() % 10;
+                weights[edge_count] = rand() % 9 + 1;
                 edge_count++;
             }
         }
