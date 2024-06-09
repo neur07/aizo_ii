@@ -6,6 +6,9 @@ add_executable(
     src/main.cpp 
     src/menus.h 
     src/utils/utils.cpp 
+    src/utils/list.cpp 
+    src/utils/vector.cpp 
+    src/utils/priorityQueue.cpp 
     src/graph/IMGraph.cpp 
     src/graph/ALGraph.cpp 
     src/graph/Edges.cpp
