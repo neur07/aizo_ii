@@ -1,9 +1,7 @@
-#ifndef LIST_H
-#define LIST_H
-
+#pragma once
 #include <stdexcept>
 
-template<typename T>
+template<typename T> 
 class List {
 private:
     struct Node {
@@ -35,7 +33,7 @@ public:
         }
         T& operator*() {
             if (!node) {
-                throw std::out_of_range("Dereferencing end iterator");
+                throw std::out_of_range("Poza zakresem");
             }
             return node->data;
         }
@@ -74,13 +72,11 @@ public:
         head = tail = nullptr;
     }
 
-    Iterator begin() {
+    Iterator begin() const {
         return Iterator(head);
     }
 
-    Iterator end() {
+    Iterator end() const {
         return Iterator(nullptr);
     }
 };
-
-#endif // LIST_H

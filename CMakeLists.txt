@@ -11,7 +11,7 @@ add_executable(
     src/utils/priorityQueue.h
     src/graph/IMGraph.cpp 
     src/graph/ALGraph.cpp 
-    src/graph/Edges.cpp
+    src/graph/Edge.h
     src/algorithm/MST.cpp
     src/algorithm/SP.cpp
     )
@@ -23,5 +23,5 @@ ${CMAKE_CURRENT_SOURCE_DIR}/src/utils
 ${CMAKE_CURRENT_SOURCE_DIR}/src/algorithm
 )
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)

@@ -1,70 +1,61 @@
 #include "ALGraph.h"
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <fstream>
 
-ALGraph::ALGraph(bool dir) : directed(dir), adjacency_list(nullptr), vertices(0) {}
+ALGraph::ALGraph(bool dir) : vertices(0), directed(dir) {}
 
-ALGraph::~ALGraph() {
-    if (adjacency_list) {
-        for (int i = 0; i < vertices; ++i) {
-            delete adjacency_list[i];
-        }
-        delete[] adjacency_list;
-    }
+int ALGraph::size() {
+    return vertices;
 }
 
-void ALGraph::add_edge(int src, int dest, int weight) {
-    if (src < vertices && dest < vertices) {
-        adjacency_list[src]->add_edge(dest, weight);
+void ALGraph::allocate_list() {
+    adjacencyList.resize(vertices);
+}
+
+void ALGraph::add_edge(int u, int v, int weight) {
+    if (u >= 0 && u < vertices && v >= 0 && v < vertices) {
+        adjacencyList[u].push_back(Edge(u, v, weight));
         if (!directed) {
-            adjacency_list[dest]->add_edge(src, weight);
+            adjacencyList[v].push_back(Edge(v, u, weight));
         }
-    }
-}
-
-void ALGraph::print_graph() const {
-    printf("\nGraph %sdirected (Adjacency List):\n\n", directed ? "" : "not ");
-    for (int i = 0; i < vertices; i++) {
-        adjacency_list[i]->print_edges();
     }
 }
 
 void ALGraph::load_from_file(const std::string& filename) {
     std::ifstream file(filename);
-    if (!file.is_open()) {
-        std::cerr << "Unable to open file!" << std::endl;
+    if (!file) {
+        std::cerr << "Błąd otwarcia pliku!" << std::endl;
         return;
     }
 
     int edges;
-    file >> edges >> vertices;
-
-    adjacency_list = new Edges*[vertices];
-    for (int i = 0; i < vertices; ++i) {
-        adjacency_list[i] = new Edges(i);
-    }
+    file >> vertices >> edges;
+    allocate_list();
 
     int start, end, weight;
-    for (int i = 0; i < edges; i++) {
+    for (int i = 0; i < edges; ++i) {
         file >> start >> end >> weight;
-        if (start >= 0 && start < vertices && end >= 0 && end < vertices) {
-            add_edge(start, end, weight);
-        }
+        add_edge(start, end, weight);
     }
-    printsep("Successfully loaded Adjacency List");
+    std::cout << "Pomyślnie wczytano listę sąsiedztwa" << std::endl;
 }
 
 void ALGraph::generate_random_graph(int v, int e) {
     vertices = v;
-    
-    adjacency_list = new Edges*[vertices];
-    for (int i = 0; i < vertices; ++i) {
-        adjacency_list[i] = new Edges(i);
-    }
+    allocate_list();
 
     int* src = new int[e];
     int* dest = new int[e];
     int* weights = new int[e];
 
-    generate_random_connected_graph(vertices, e, src, dest, weights);
+    std::srand(std::time(nullptr));
+    for (int i = 0; i < e; ++i) {
+        src[i] = std::rand() % vertices;
+        dest[i] = std::rand() % vertices;
+        weights[i] = (std::rand() % 100) + 1;
+    }
 
     for (int i = 0; i < e; ++i) {
         add_edge(src[i], dest[i], weights[i]);
@@ -75,14 +66,42 @@ void ALGraph::generate_random_graph(int v, int e) {
     delete[] weights;
 }
 
-int ALGraph::get_vertices() const {
-    return vertices;
+void ALGraph::print_graph() const {
+    printf("\nGraf %s skierowany (Lista Sąsiedztwa):\n\n", directed ? "" : "nie ");
+    for (int i = 0; i < vertices; ++i) {
+        printf("%2d: ", i);
+        for (const auto& edge : adjacencyList[i]) {
+            printf(" -> (%d, %d)", edge.v, edge.weight);
+        }
+        std::cout << std::endl;
+    }
 }
 
-Edge* ALGraph::get_edges(int u) const {
-    return adjacency_list[u]->get_edges();
+Vector<Edge> ALGraph::get_edges() const {
+    Vector<Edge> edges_list;
+    for (int i = 0; i < vertices; ++i) {
+        for (const auto& edge : adjacencyList[i]) {
+            if (directed || i < edge.v) { // unikamy duplikatów dla grafów nieskierowanych
+                edges_list.push_back(edge);
+            }
+        }
+    }
+    return edges_list;
 }
 
-int ALGraph::get_edge_count(int u) const {
-    return adjacency_list[u]->get_count();
+Vector<int> ALGraph::get_neighbors(int v) const {
+    Vector<int> neighbors;
+    for (const auto& edge : adjacencyList[v]) {
+        neighbors.push_back(edge.v);
+    }
+    return neighbors;
+}
+
+int ALGraph::get_weight(int u, int v) const {
+    for (const auto& edge : adjacencyList[u]) {
+        if (edge.v == v) {
+            return edge.weight;
+        }
+    }
+    return 0; // lub inna wartość wskazująca na brak krawędzi
 }

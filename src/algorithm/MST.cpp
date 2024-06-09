@@ -1,193 +1,124 @@
 #include "MST.h"
 #include "PriorityQueue.h"
-#include <iostream>
-#include <limits>
-#include <cmath>
 
 void MST::prim(const ALGraph& graph) {
-    int V = graph.vertices;
-    Vector<int> key(V, std::numeric_limits<int>::max());
-    Vector<bool> inMST(V, false);
-    Vector<int> parent(V, -1);
-
+    Vector<int> key(graph.size(), INT_MAX);
+    Vector<bool> in_mst(graph.size(), false);
+    Vector<int> parent(graph.size(), -1);
     key[0] = 0;
-
-    PriorityQueue<std::pair<int, int>, std::greater<std::pair<int, int> > > pq;
-    pq.push({0, 0});
+    PriorityQueue<int, int> pq;
+    pq.push(0, 0);
 
     while (!pq.empty()) {
-        int u = pq.top().second;
-        pq.pop();
+        int u = pq.pop();
+        in_mst[u] = true;
 
-        inMST[u] = true;
-
-        for (const auto& [v, weight] : graph.adjacencyList[u]) {
-            if (!inMST[v] && weight < key[v]) {
+        for (const auto& edge : graph.edges(u)) {
+            int v = edge.to;
+            int weight = edge.weight;
+            if (!in_mst[v] && key[v] > weight) {
                 key[v] = weight;
-                pq.push({key[v], v});
+                pq.push(v, key[v]);
                 parent[v] = u;
             }
         }
     }
 
-    for (int i = 1; i < V; i++) {
-        if (parent[i] != -1) {
-            std::cout << parent[i] << " - " << i << std::endl;
-        }
-    }
+    for (int i = 1; i < graph.size(); ++i)
+        std::cout << parent[i] << " - " << i << std::endl;
 }
 
 void MST::prim(const IMGraph& graph) {
-    int V = graph.vertices;
-    Vector<int> key(V, std::numeric_limits<int>::max());
-    Vector<bool> inMST(V, false);
-    Vector<int> parent(V, -1);
-
+    Vector<int> key(graph.size(), INT_MAX);
+    Vector<bool> in_mst(graph.size(), false);
+    Vector<int> parent(graph.size(), -1);
     key[0] = 0;
+    PriorityQueue<int, int> pq;
+    pq.push(0, 0);
 
-    for (int count = 0; count < V - 1; count++) {
-        int u = -1;
+    while (!pq.empty()) {
+        int u = pq.pop();
+        in_mst[u] = true;
 
-        for (int v = 0; v < V; v++) {
-            if (!inMST[v] && (u == -1 || key[v] < key[u]))
-                u = v;
-        }
-
-        inMST[u] = true;
-
-        for (int edgeIndex = 0; edgeIndex < graph.edges; edgeIndex++) {
-            if (graph.incidenceMatrix[u][edgeIndex] != 0) {
-                int v = -1;
-
-                for (int i = 0; i < V; i++) {
-                    if (graph.incidenceMatrix[i][edgeIndex] != 0 && i != u) {
-                        v = i;
-                        break;
-                    }
-                }
-
-                int weight = std::abs(graph.incidenceMatrix[u][edgeIndex]);
-                if (v != -1 && !inMST[v] && weight < key[v]) {
-                    key[v] = weight;
-                    parent[v] = u;
-                }
+        for (int v = 0; v < graph.size(); ++v) {
+            int weight = graph.weight(u, v);
+            if (weight && !in_mst[v] && key[v] > weight) {
+                key[v] = weight;
+                pq.push(v, key[v]);
+                parent[v] = u;
             }
         }
     }
 
-    for (int i = 1; i < V; i++) {
-        if (parent[i] != -1) {
-            std::cout << parent[i] << " - " << i << std::endl;
-        }
-    }
+    for (int i = 1; i < graph.size(); ++i)
+        std::cout << parent[i] << " - " << i << std::endl;
 }
 
 void MST::kruskal(const ALGraph& graph) {
-    int V = graph.vertices;
-    Vector<Edge> edges;
+    Vector<Edge> edges = graph.get_all_edges();
+    std::sort(edges.begin(), edges.end(), [](Edge a, Edge b) { return a.weight < b.weight; });
 
-    for (int u = 0; u < V; u++) {
-        for (const auto& [v, weight] : graph.adjacencyList[u]) {
-            if (u < v) {
-                edges.push_back({u, v, weight});
-            }
-        }
-    }
+    Vector<int> parent(graph.size());
+    Vector<int> rank(graph.size(), 0);
+    for (int i = 0; i < graph.size(); ++i)
+        parent[i] = i;
 
-    sort_edges(edges);
-
-    Vector<int> parent(V);
-    Vector<int> rank(V, 0);
-    for (int v = 0; v < V; v++) {
-        parent[v] = v;
-    }
-
-    Vector<Edge> mstEdges;
-
+    Vector<Edge> mst;
     for (const auto& edge : edges) {
-        int uRoot = find(parent, edge.src);
-        int vRoot = find(parent, edge.dest);
-
-        if (uRoot != vRoot) {
-            mstEdges.push_back(edge);
-            unite(parent, rank, uRoot, vRoot);
+        int u = edge.from;
+        int v = edge.to;
+        int set_u = find_set(parent, u);
+        int set_v = find_set(parent, v);
+        if (set_u != set_v) {
+            mst.push_back(edge);
+            union_set(parent, rank, set_u, set_v);
         }
     }
 
-    for (const auto& edge : mstEdges) {
-        std::cout << edge.src << " - " << edge.dest << " : " << edge.weight << std::endl;
-    }
+    for (const auto& edge : mst)
+        std::cout << edge.from << " - " << edge.to << std::endl;
 }
 
 void MST::kruskal(const IMGraph& graph) {
-    int V = graph.vertices;
-    Vector<Edge> edges;
+    Vector<Edge> edges = graph.get_all_edges();
+    std::sort(edges.begin(), edges.end(), [](Edge a, Edge b) { return a.weight < b.weight; });
 
-    for (int edgeIndex = 0; edgeIndex < graph.edges; edgeIndex++) {
-        int u = -1, v = -1;
-        for (int i = 0; i < V; i++) {
-            if (graph.incidenceMatrix[i][edgeIndex] == 1) {
-                u = i;
-            } else if (graph.incidenceMatrix[i][edgeIndex] == -1) {
-                v = i;
-            }
-        }
-        if (u != -1 && v != -1) {
-            edges.push_back({u, v, std::abs(graph.incidenceMatrix[u][edgeIndex])});
-        }
-    }
+    Vector<int> parent(graph.size());
+    Vector<int> rank(graph.size(), 0);
+    for (int i = 0; i < graph.size(); ++i)
+        parent[i] = i;
 
-    sort_edges(edges);
-
-    Vector<int> parent(V);
-    Vector<int> rank(V, 0);
-    for (int v = 0; v < V; v++) {
-        parent[v] = v;
-    }
-
-    Vector<Edge> mstEdges;
-
+    Vector<Edge> mst;
     for (const auto& edge : edges) {
-        int uRoot = find(parent, edge.src);
-        int vRoot = find(parent, edge.dest);
-
-        if (uRoot != vRoot) {
-            mstEdges.push_back(edge);
-            unite(parent, rank, uRoot, vRoot);
+        int u = edge.from;
+        int v = edge.to;
+        int set_u = find_set(parent, u);
+        int set_v = find_set(parent, v);
+        if (set_u != set_v) {
+            mst.push_back(edge);
+            union_set(parent, rank, set_u, set_v);
         }
     }
 
-    for (const auto& edge : mstEdges) {
-        std::cout << edge.src << " - " << edge.dest << " : " << edge.weight << std::endl;
-    }
+    for (const auto& edge : mst)
+        std::cout << edge.from << " - " << edge.to << std::endl;
 }
 
-void MST::sort_edges(Vector<Edge>& edges) {
-    for (size_t i = 0; i < edges.size() - 1; ++i) {
-        for (size_t j = 0; j < edges.size() - i - 1; ++j) {
-            if (edges[j].weight > edges[j + 1].weight) {
-                std::swap(edges[j], edges[j + 1]);
-            }
-        }
-    }
-}
-
-int MST::find(Vector<int>& parent, int i) {
+int MST::find_set(Vector<int>& parent, int i) {
     if (parent[i] != i)
-        parent[i] = find(parent, parent[i]);
+        parent[i] = find_set(parent, parent[i]);
     return parent[i];
 }
 
-void MST::unite(Vector<int>& parent, Vector<int>& rank, int x, int y) {
-    int rootX = find(parent, x);
-    int rootY = find(parent, y);
-
-    if (rank[rootX] < rank[rootY]) {
-        parent[rootX] = rootY;
-    } else if (rank[rootX] > rank[rootY]) {
-        parent[rootY] = rootX;
+void MST::union_set(Vector<int>& parent, Vector<int>& rank, int x, int y) {
+    int root_x = find_set(parent, x);
+    int root_y = find_set(parent, y);
+    if (rank[root_x] < rank[root_y]) {
+        parent[root_x] = root_y;
+    } else if (rank[root_x] > rank[root_y]) {
+        parent[root_y] = root_x;
     } else {
-        parent[rootY] = rootX;
-        rank[rootX]++;
+        parent[root_y] = root_x;
+        rank[root_x]++;
     }
 }

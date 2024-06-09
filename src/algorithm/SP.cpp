@@ -1,165 +1,101 @@
 #include "SP.h"
 #include "PriorityQueue.h"
-#include "Edges.h"
-#include <iostream>
-#include <limits>
 
-void SP::dijkstra(const ALGraph& graph, int start) {
-    int V = graph.vertices;
-    Vector<int> dist(V, std::numeric_limits<int>::max());
-    Vector<bool> visited(V, false);
-
+void SP::dijkstra(const ALGraph& graph, int start, int end) {
+    Vector<int> dist(graph.size(), INT_MAX);
     dist[start] = 0;
-
-    PriorityQueue<std::pair<int, int>, std::greater<std::pair<int, int>>> pq;
-    pq.push({0, start});
+    PriorityQueue<int, int> pq;
+    pq.push(start, 0);
 
     while (!pq.empty()) {
-        int u = pq.top().second;
-        pq.pop();
+        int u = pq.pop();
 
-        if (visited[u]) continue;
-        visited[u] = true;
-
-        for (const auto& [v, weight] : graph.adjacencyList[u]) {
-            if (dist[u] + weight < dist[v]) {
+        for (const auto& edge : graph.edges(u)) {
+            int v = edge.to;
+            int weight = edge.weight;
+            if (dist[v] > dist[u] + weight) {
                 dist[v] = dist[u] + weight;
-                pq.push({dist[v], v});
+                pq.push(v, dist[v]);
             }
         }
     }
 
-    for (int i = 0; i < V; i++) {
-        std::cout << "Distance from " << start << " to " << i << " is " << dist[i] << std::endl;
-    }
+    printf("Odległość od %d do %d wynosi %d\n", start, end, dist[end]);
 }
 
-void SP::bellman_ford(const ALGraph& graph, int start) {
-    int V = graph.vertices;
-    Vector<int> dist(V, std::numeric_limits<int>::max());
-
+void SP::dijkstra(const IMGraph& graph, int start, int end) {
+    Vector<int> dist(graph.size(), INT_MAX);
     dist[start] = 0;
+    PriorityQueue<int, int> pq;
+    pq.push(start, 0);
 
-    Vector<Edge> edges;
-    for (int u = 0; u < V; u++) {
-        for (const auto& [v, weight] : graph.adjacencyList[u]) {
-            edges.push_back({u, v, weight});
+    while (!pq.empty()) {
+        int u = pq.pop();
+
+        for (int v = 0; v < graph.size(); ++v) {
+            int weight = graph.weight(u, v);
+            if (weight && dist[v] > dist[u] + weight) {
+                dist[v] = dist[u] + weight;
+                pq.push(v, dist[v]);
+            }
         }
     }
 
-    for (int i = 1; i <= V - 1; i++) {
-        for (const auto& edge : edges) {
-            int u = edge.src;
-            int v = edge.dest;
+    printf("Odległość od %d do %d wynosi %d\n", start, end, dist[end]);
+}
+
+void SP::bellman_ford(const ALGraph& graph, int start, int end) {
+    Vector<int> dist(graph.size(), INT_MAX);
+    dist[start] = 0;
+
+    for (int i = 1; i < graph.size(); ++i) {
+        for (const auto& edge : graph.get_all_edges()) {
+            int u = edge.from;
+            int v = edge.to;
             int weight = edge.weight;
-            if (dist[u] != std::numeric_limits<int>::max() && dist[u] + weight < dist[v]) {
+            if (dist[u] != INT_MAX && dist[u] + weight < dist[v]) {
                 dist[v] = dist[u] + weight;
             }
         }
     }
 
-    for (const auto& edge : edges) {
-        int u = edge.src;
-        int v = edge.dest;
+    for (const auto& edge : graph.get_all_edges()) {
+        int u = edge.from;
+        int v = edge.to;
         int weight = edge.weight;
-        if (dist[u] != std::numeric_limits<int>::max() && dist[u] + weight < dist[v]) {
-            std::cout << "Graph contains negative weight cycle" << std::endl;
+        if (dist[u] != INT_MAX && dist[u] + weight < dist[v]) {
+            printf("Graf zawiera cykl o ujemnej wadze\n");
             return;
         }
     }
 
-    for (int i = 0; i < V; i++) {
-        std::cout << "Distance from " << start << " to " << i << " is " << dist[i] << std::endl;
-    }
+    printf("Odległość od %d do %d wynosi %d\n", start, end, dist[end]);
 }
 
-void SP::dijkstra(const IMGraph& graph, int start) {
-    int V = graph.vertices;
-    int E = graph.edges;
-    Vector<int> dist(V, std::numeric_limits<int>::max());
-    Vector<bool> visited(V, false);
-
+void SP::bellman_ford(const IMGraph& graph, int start, int end) {
+    Vector<int> dist(graph.size(), INT_MAX);
     dist[start] = 0;
 
-    PriorityQueue<std::pair<int, int>, std::greater<std::pair<int, int>>> pq;
-    pq.push({0, start});
-
-    while (!pq.empty()) {
-        int u = pq.top().second;
-        pq.pop();
-
-        if (visited[u]) continue;
-        visited[u] = true;
-
-        for (int edgeIndex = 0; edgeIndex < E; edgeIndex++) {
-            if (graph.incidenceMatrix[u][edgeIndex] != 0) {
-                int v = -1;
-
-                for (int i = 0; i < V; i++) {
-                    if (graph.incidenceMatrix[i][edgeIndex] != 0 && i != u) {
-                        v = i;
-                        break;
-                    }
-                }
-
-                int weight = std::abs(graph.incidenceMatrix[u][edgeIndex]);
-                if (dist[u] + weight < dist[v]) {
-                    dist[v] = dist[u] + weight;
-                    pq.push({dist[v], v});
-                }
-            }
-        }
-    }
-
-    for (int i = 0; i < V; i++) {
-        std::cout << "Distance from " << start << " to " << i << " is " << dist[i] << std::endl;
-    }
-}
-
-void SP::bellman_ford(const IMGraph& graph, int start) {
-    int V = graph.vertices;
-    int E = graph.edges;
-    Vector<int> dist(V, std::numeric_limits<int>::max());
-
-    dist[start] = 0;
-
-    Vector<Edge> edges;
-    for (int edgeIndex = 0; edgeIndex < E; edgeIndex++) {
-        int u = -1, v = -1;
-        for (int i = 0; i < V; i++) {
-            if (graph.incidenceMatrix[i][edgeIndex] == 1) {
-                u = i;
-            } else if (graph.incidenceMatrix[i][edgeIndex] == -1) {
-                v = i;
-            }
-        }
-        if (u != -1 && v != -1) {
-            edges.push_back({u, v, std::abs(graph.incidenceMatrix[u][edgeIndex])});
-        }
-    }
-
-    for (int i = 1; i <= V - 1; i++) {
-        for (const auto& edge : edges) {
-            int u = edge.src;
-            int v = edge.dest;
+    for (int i = 1; i < graph.size(); ++i) {
+        for (const auto& edge : graph.get_all_edges()) {
+            int u = edge.from;
+            int v = edge.to;
             int weight = edge.weight;
-            if (dist[u] != std::numeric_limits<int>::max() && dist[u] + weight < dist[v]) {
+            if (dist[u] != INT_MAX && dist[u] + weight < dist[v]) {
                 dist[v] = dist[u] + weight;
             }
         }
     }
 
-    for (const auto& edge : edges) {
-        int u = edge.src;
-        int v = edge.dest;
+    for (const auto& edge : graph.get_all_edges()) {
+        int u = edge.from;
+        int v = edge.to;
         int weight = edge.weight;
-        if (dist[u] != std::numeric_limits<int>::max() && dist[u] + weight < dist[v]) {
-            std::cout << "Graph contains negative weight cycle" << std::endl;
+        if (dist[u] != INT_MAX && dist[u] + weight < dist[v]) {
+            printf("Graf zawiera cykl o ujemnej wadze\n");
             return;
         }
     }
 
-    for (int i = 0; i < V; i++) {
-        std::cout << "Distance from " << start << " to " << i << " is " << dist[i] << std::endl;
-    }
+    printf("Odległość od %d do %d wynosi %d\n", start, end, dist[end]);
 }

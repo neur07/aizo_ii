@@ -1,24 +1,25 @@
 #pragma once
-#include "Edges.h"
-#include <iostream>
-#include <fstream>
-#include <utils.h>
+#include "Vector.h"
+#include "Edge.h"
+#include <string>
 
 class ALGraph {
-    Edges** adjacency_list;
+public:
     int vertices;
     bool directed;
+    Vector<Vector<Edge> > adjacencyList;
 
-public:
     ALGraph(bool dir = false);
-    ~ALGraph();
-    void add_edge(int src, int dest, int weight);
+    int size();
+    bool is_directed() const { return directed; }
     void print_graph() const;
     void load_from_file(const std::string& filename);
     void generate_random_graph(int v, int e);
+    void add_edge(int u, int v, int weight);
+    Vector<Edge> get_edges() const;
+    Vector<int> get_neighbors(int v) const;
+    int get_weight(int u, int v) const;
 
-    int get_vertices() const;
-    Edge* get_edges(int u) const;
-    int get_edge_count(int u) const;
-    bool is_directed() const { return directed; }
+private:
+    void allocate_list();
 };

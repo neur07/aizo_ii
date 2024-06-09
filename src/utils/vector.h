@@ -1,72 +1,80 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#pragma once
+#include <cstddef> // Added for size_t
 
-#include <stdexcept>
-
-template<typename T>
+template <typename T>
 class Vector {
-public:
-    Vector() : capacity(1), length(0) {
-        data = new T[capacity];
+private:
+    T* data_;
+    std::size_t size_;
+    std::size_t capacity_;
+
+    void internal_resize(std::size_t new_capacity) {
+        T* new_data = new T[new_capacity];
+        for (std::size_t i = 0; i < size_; ++i) {
+            new_data[i] = data_[i];
+        }
+        delete[] data_;
+        data_ = new_data;
+        capacity_ = new_capacity;
     }
+
+public:
+    Vector() : data_(nullptr), size_(0), capacity_(0) {}
+
     ~Vector() {
-        delete[] data;
+        delete[] data_;
     }
 
     void push_back(const T& value) {
-        if (length == capacity) {
-            grow();
+        if (size_ == capacity_) {
+            internal_resize(size_ == 0 ? 1 : 2 * size_);
         }
-        data[length++] = value;
+        data_[size_++] = value;
     }
 
-    T& operator[](size_t index) {
-        if (index >= length) {
-            throw std::out_of_range("Index out of range");
+    void pop_back() {
+        if (size_ > 0) {
+            --size_;
         }
-        return data[index];
     }
 
-    const T& operator[](size_t index) const {
-        if (index >= length) {
-            throw std::out_of_range("Index out of range");
-        }
-        return data[index];
+    std::size_t size() const {
+        return size_;
     }
 
-    size_t size() const {
-        return length;
+    bool empty() const {
+        return size_ == 0;
     }
 
-    void resize(size_t newSize) {
-        if (newSize > capacity) {
-            T* newData = new T[newSize];
-            copy_data(newData, data, length);
-            delete[] data;
-            data = newData;
-            capacity = newSize;
-        }
-        length = newSize;
+    void clear() {
+        size_ = 0;
     }
 
-private:
-    size_t capacity;
-    size_t length;
-    T* data;
-
-    void grow() {
-        capacity *= 2;
-        T* newData = new T[capacity];
-        copy_data(newData, data, length);
-        delete[] data;
-        data = newData;
+    T& operator[](std::size_t index) {
+        return data_[index];
     }
 
-    void copy_data(T* destination, T* source, size_t length) {
-        for (size_t i = 0; i < length; ++i) {
-            destination[i] = source[i];
-        }
+    const T& operator[](std::size_t index) const {
+        return data_[index];
+    }
+
+    T* begin() {
+        return data_;
+    }
+
+    T* end() {
+        return data_ + size_;
+    }
+
+    const T* begin() const {
+        return data_;
+    }
+
+    const T* end() const {
+        return data_ + size_;
+    }
+
+    void resize(std::size_t new_capacity) {
+        internal_resize(new_capacity);
     }
 };
-
-#endif // VECTOR_H
