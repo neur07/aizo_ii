@@ -1,73 +1,73 @@
 #include "MST.h"
+#include "PriorityQueue.h"
 #include <iostream>
 #include <limits>
-
-using namespace std;
+#include <cmath>
 
 void MST::prim(const ALGraph& graph) {
-    int vertices = graph.get_vertices();
-    bool* inMST = new bool[vertices]();
-    int* key = new int[vertices];
-    int* parent = new int[vertices];
-    for (int i = 0; i < vertices; ++i) {
-        key[i] = numeric_limits<int>::max();
-        parent[i] = -1;
-    }
+    int V = graph.vertices;
+    Vector<int> key(V, std::numeric_limits<int>::max());
+    Vector<bool> inMST(V, false);
+    Vector<int> parent(V, -1);
 
     key[0] = 0;
-    for (int count = 0; count < vertices - 1; ++count) {
-        int u = -1;
-        for (int i = 0; i < vertices; ++i)
-            if (!inMST[i] && (u == -1 || key[i] < key[u]))
-                u = i;
+
+    PriorityQueue<std::pair<int, int>, std::greater<std::pair<int, int> > > pq;
+    pq.push({0, 0});
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
 
         inMST[u] = true;
-        Edge* edges = graph.get_edges(u);
-        int edge_count = graph.get_edge_count(u);
-        for (int i = 0; i < edge_count; ++i) {
-            int v = edges[i].dest;
-            int weight = edges[i].weight;
+
+        for (const auto& [v, weight] : graph.adjacencyList[u]) {
             if (!inMST[v] && weight < key[v]) {
                 key[v] = weight;
+                pq.push({key[v], v});
                 parent[v] = u;
             }
         }
     }
 
-    printsep("Algorytm MST (Prim) dla Listy sąsiedztwa");
-    for (int i = 1; i < vertices; ++i)
-        cout << parent[i] << " - " << i << " : " << key[i] << "\n";
-
-    delete[] inMST;
-    delete[] key;
-    delete[] parent;
+    for (int i = 1; i < V; i++) {
+        if (parent[i] != -1) {
+            std::cout << parent[i] << " - " << i << std::endl;
+        }
+    }
 }
 
 void MST::prim(const IMGraph& graph) {
-    int vertices = graph.get_vertices();
-    int edges = graph.get_edges();
-    bool* inMST = new bool[vertices]();
-    int* key = new int[vertices];
-    int* parent = new int[vertices];
-    for (int i = 0; i < vertices; ++i) {
-        key[i] = numeric_limits<int>::max();
-        parent[i] = -1;
-    }
+    int V = graph.vertices;
+    Vector<int> key(V, std::numeric_limits<int>::max());
+    Vector<bool> inMST(V, false);
+    Vector<int> parent(V, -1);
 
     key[0] = 0;
-    for (int count = 0; count < vertices - 1; ++count) {
+
+    for (int count = 0; count < V - 1; count++) {
         int u = -1;
-        for (int i = 0; i < vertices; ++i)
-            if (!inMST[i] && (u == -1 || key[i] < key[u]))
-                u = i;
+
+        for (int v = 0; v < V; v++) {
+            if (!inMST[v] && (u == -1 || key[v] < key[u]))
+                u = v;
+        }
 
         inMST[u] = true;
-        const int* incidence_row = graph.get_incidence_row(u);
-        for (int j = 0; j < edges; ++j) {
-            if (incidence_row[j] != 0) {
-                int v = graph.get_other_vertex(u, j);
-                int weight = incidence_row[j];
-                if (!inMST[v] && weight < key[v]) {
+
+        for (int edgeIndex = 0; edgeIndex < graph.edges; edgeIndex++) {
+            if (graph.incidenceMatrix[u][edgeIndex] != 0) {
+                int v = -1;
+
+                for (int i = 0; i < V; i++) {
+                    if (graph.incidenceMatrix[i][edgeIndex] != 0 && i != u) {
+                        v = i;
+                        break;
+                    }
+                }
+
+                int weight = std::abs(graph.incidenceMatrix[u][edgeIndex]);
+                if (v != -1 && !inMST[v] && weight < key[v]) {
                     key[v] = weight;
                     parent[v] = u;
                 }
@@ -75,142 +75,119 @@ void MST::prim(const IMGraph& graph) {
         }
     }
 
-    printsep("Algorytm MST (Prim) dla Macierzy incydencji");
-    for (int i = 1; i < vertices; ++i)
-        cout << parent[i] << " - " << i << " : " << key[i] << "\n";
-
-    delete[] inMST;
-    delete[] key;
-    delete[] parent;
+    for (int i = 1; i < V; i++) {
+        if (parent[i] != -1) {
+            std::cout << parent[i] << " - " << i << std::endl;
+        }
+    }
 }
 
 void MST::kruskal(const ALGraph& graph) {
-    int vertices = graph.get_vertices();
-    int total_edges = 0;
-    for (int i = 0; i < vertices; ++i) {
-        total_edges += graph.get_edge_count(i);
-    }
+    int V = graph.vertices;
+    Vector<Edge> edges;
 
-    Edge* edges = new Edge[total_edges];
-    int edge_index = 0;
-    for (int i = 0; i < vertices; ++i) {
-        Edge* vertex_edges = graph.get_edges(i);
-        int edge_count = graph.get_edge_count(i);
-        for (int j = 0; j < edge_count; ++j) {
-            edges[edge_index++] = vertex_edges[j];
+    for (int u = 0; u < V; u++) {
+        for (const auto& [v, weight] : graph.adjacencyList[u]) {
+            if (u < v) {
+                edges.push_back({u, v, weight});
+            }
         }
     }
 
-    sort_edges(edges, total_edges);
+    sort_edges(edges);
 
-    int* parent = new int[vertices];
-    int* rank = new int[vertices];
-
-    for (int i = 0; i < vertices; ++i) {
-        parent[i] = i;
-        rank[i] = 0;
+    Vector<int> parent(V);
+    Vector<int> rank(V, 0);
+    for (int v = 0; v < V; v++) {
+        parent[v] = v;
     }
 
-    int mst_edges = 0;
-    int mst_cost = 0;
+    Vector<Edge> mstEdges;
 
-    printsep("Algorytm MST (Kruskal) dla Listy sąsiedztwa");
-    for (int i = 0; i < total_edges && mst_edges < vertices - 1; ++i) {
-        int u = find(parent, edges[i].dest);
-        int v = find(parent, edges[i].weight);
+    for (const auto& edge : edges) {
+        int uRoot = find(parent, edge.src);
+        int vRoot = find(parent, edge.dest);
 
-        if (u != v) {
-            cout << edges[i].dest << " - " << edges[i].weight << " : " << edges[i].weight << "\n";
-            unite(parent, rank, u, v);
-            mst_cost += edges[i].weight;
-            ++mst_edges;
+        if (uRoot != vRoot) {
+            mstEdges.push_back(edge);
+            unite(parent, rank, uRoot, vRoot);
         }
     }
 
-    cout << "Całkowita waga: " << mst_cost << "\n";
-
-    delete[] edges;
-    delete[] parent;
-    delete[] rank;
+    for (const auto& edge : mstEdges) {
+        std::cout << edge.src << " - " << edge.dest << " : " << edge.weight << std::endl;
+    }
 }
 
 void MST::kruskal(const IMGraph& graph) {
-    int vertices = graph.get_vertices();
-    int edges = graph.get_edges();
-    Edge* edge_list = new Edge[edges];
+    int V = graph.vertices;
+    Vector<Edge> edges;
 
-    int edge_index = 0;
-    for (int i = 0; i < vertices; ++i) {
-        for (int j = 0; j < edges; ++j) {
-            if (graph.get_incidence_row(i)[j] != 0) {
-                edge_list[edge_index].dest = i;
-                edge_list[edge_index].weight = graph.get_incidence_row(i)[j];
-                ++edge_index;
+    for (int edgeIndex = 0; edgeIndex < graph.edges; edgeIndex++) {
+        int u = -1, v = -1;
+        for (int i = 0; i < V; i++) {
+            if (graph.incidenceMatrix[i][edgeIndex] == 1) {
+                u = i;
+            } else if (graph.incidenceMatrix[i][edgeIndex] == -1) {
+                v = i;
             }
         }
-    }
-
-    sort_edges(edge_list, edges);
-
-    int* parent = new int[vertices];
-    int* rank = new int[vertices];
-
-    for (int i = 0; i < vertices; ++i) {
-        parent[i] = i;
-        rank[i] = 0;
-    }
-
-    int mst_edges = 0;
-    int mst_cost = 0;
-
-    printsep("Algorytm MST (Kruskal) dla Macierzy incydencji");
-    for (int i = 0; i < edges && mst_edges < vertices - 1; ++i) {
-        int u = find(parent, edge_list[i].dest);
-        int v = find(parent, edge_list[i].weight);
-
-        if (u != v) {
-            cout << edge_list[i].dest << " - " << edge_list[i].weight << " : " << edge_list[i].weight << "\n";
-            unite(parent, rank, u, v);
-            mst_cost += edge_list[i].weight;
-            ++mst_edges;
+        if (u != -1 && v != -1) {
+            edges.push_back({u, v, std::abs(graph.incidenceMatrix[u][edgeIndex])});
         }
     }
 
-    cout << "Całkowita waga: " << mst_cost << "\n";
+    sort_edges(edges);
 
-    delete[] edge_list;
-    delete[] parent;
-    delete[] rank;
+    Vector<int> parent(V);
+    Vector<int> rank(V, 0);
+    for (int v = 0; v < V; v++) {
+        parent[v] = v;
+    }
+
+    Vector<Edge> mstEdges;
+
+    for (const auto& edge : edges) {
+        int uRoot = find(parent, edge.src);
+        int vRoot = find(parent, edge.dest);
+
+        if (uRoot != vRoot) {
+            mstEdges.push_back(edge);
+            unite(parent, rank, uRoot, vRoot);
+        }
+    }
+
+    for (const auto& edge : mstEdges) {
+        std::cout << edge.src << " - " << edge.dest << " : " << edge.weight << std::endl;
+    }
 }
 
-void MST::sort_edges(Edge* edges, int edge_count) {
-    for (int i = 0; i < edge_count - 1; ++i) {
-        for (int j = 0; j < edge_count - i - 1; ++j) {
+void MST::sort_edges(Vector<Edge>& edges) {
+    for (size_t i = 0; i < edges.size() - 1; ++i) {
+        for (size_t j = 0; j < edges.size() - i - 1; ++j) {
             if (edges[j].weight > edges[j + 1].weight) {
-                Edge temp = edges[j];
-                edges[j] = edges[j + 1];
-                edges[j + 1] = temp;
+                std::swap(edges[j], edges[j + 1]);
             }
         }
     }
 }
 
-int MST::find(int parent[], int i) {
+int MST::find(Vector<int>& parent, int i) {
     if (parent[i] != i)
         parent[i] = find(parent, parent[i]);
     return parent[i];
 }
 
-void MST::unite(int parent[], int rank[], int x, int y) {
-    int root_x = find(parent, x);
-    int root_y = find(parent, y);
+void MST::unite(Vector<int>& parent, Vector<int>& rank, int x, int y) {
+    int rootX = find(parent, x);
+    int rootY = find(parent, y);
 
-    if (rank[root_x] < rank[root_y])
-        parent[root_x] = root_y;
-    else if (rank[root_x] > rank[root_y])
-        parent[root_y] = root_x;
-    else {
-        parent[root_y] = root_x;
-        ++rank[root_x];
+    if (rank[rootX] < rank[rootY]) {
+        parent[rootX] = rootY;
+    } else if (rank[rootX] > rank[rootY]) {
+        parent[rootY] = rootX;
+    } else {
+        parent[rootY] = rootX;
+        rank[rootX]++;
     }
 }

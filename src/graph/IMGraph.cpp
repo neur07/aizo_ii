@@ -14,17 +14,14 @@ IMGraph::~IMGraph() {
 void IMGraph::allocate_matrix() {
     incidence_matrix = new int*[vertices];
     for (int i = 0; i < vertices; ++i) {
-        incidence_matrix[i] = new int[edges];
-        for (int j = 0; j < edges; ++j) {
-            incidence_matrix[i][j] = 0;
-        }
+        incidence_matrix[i] = new int[edges]();
     }
 }
 
 void IMGraph::load_from_file(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "Nie można otworzyć pliku!" << std::endl;
+        std::cerr << "Unable to open file!" << std::endl;
         return;
     }
 
@@ -39,7 +36,7 @@ void IMGraph::load_from_file(const std::string& filename) {
             incidence_matrix[end][i] = weight;
         }
     }
-    printsep("Pomyślnie załadowano Macierz incydencji");
+    printsep("Successfully loaded Incidence Matrix");
 }
 
 void IMGraph::generate_random_graph(int v, int e) {
@@ -65,7 +62,7 @@ void IMGraph::generate_random_graph(int v, int e) {
 }
 
 void IMGraph::print_graph() const {
-    printf("\nGraf %sskierowany (Macierz incydencji):\n\n", directed ? "" : "nie");
+    printf("\nGraph %sdirected (Incidence Matrix):\n\n", directed ? "" : "not ");
     printf("    ");
     for (int i = 1; i <= edges; ++i) printf("#%-3d ", i);
     std::cout << std::endl;

@@ -1,6 +1,8 @@
 #pragma once
 #include "ALGraph.h"
 #include "IMGraph.h"
+#include "Edges.h"
+#include "Vector.h"
 
 class MST {
 public:
@@ -10,7 +12,7 @@ public:
     static void kruskal(const IMGraph& graph);
 
 private:
-    static void sort_edges(Edge* edges, int edge_count);
-    static int find(int parent[], int i);
-    static void unite(int parent[], int rank[], int x, int y);
+    static void sort_edges(Vector<Edge>& edges);
+    static int find(Vector<int>& parent, int i);
+    static void unite(Vector<int>& parent, Vector<int>& rank, int x, int y);
 };

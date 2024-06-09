@@ -1,8 +1,6 @@
 #include "ALGraph.h"
 
-ALGraph::ALGraph(bool dir) : directed(dir) {
-    adjacency_list = nullptr;
-}
+ALGraph::ALGraph(bool dir) : directed(dir), adjacency_list(nullptr), vertices(0) {}
 
 ALGraph::~ALGraph() {
     if (adjacency_list) {
@@ -23,7 +21,7 @@ void ALGraph::add_edge(int src, int dest, int weight) {
 }
 
 void ALGraph::print_graph() const {
-    printf("\nGraf %sskierowany (Lista sąsiedztwa):\n\n", directed ? "" : "nie");
+    printf("\nGraph %sdirected (Adjacency List):\n\n", directed ? "" : "not ");
     for (int i = 0; i < vertices; i++) {
         adjacency_list[i]->print_edges();
     }
@@ -32,7 +30,7 @@ void ALGraph::print_graph() const {
 void ALGraph::load_from_file(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "Nie można otworzyć pliku!" << std::endl;
+        std::cerr << "Unable to open file!" << std::endl;
         return;
     }
 
@@ -51,7 +49,7 @@ void ALGraph::load_from_file(const std::string& filename) {
             add_edge(start, end, weight);
         }
     }
-    printsep("Pomyślnie załadowano Listę sąsiedztwa");
+    printsep("Successfully loaded Adjacency List");
 }
 
 void ALGraph::generate_random_graph(int v, int e) {

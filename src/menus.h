@@ -149,13 +149,13 @@ void SP_MENU() {
             int src = choice_input("Podaj wierzchołek początkowy");
             int dest = choice_input("Podaj wierzchołek docelowy");
             auto im_start = chrono::high_resolution_clock::now();
-            SP::dijkstra(im_graph, src, dest);
+            SP::dijkstra(im_graph, src);
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Dijkstra dla Macierzy Incydencji zajął " 
                  << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
 
             auto al_start = chrono::high_resolution_clock::now();
-            SP::dijkstra(al_graph, src, dest);
+            SP::dijkstra(al_graph, src);
             auto al_stop = chrono::high_resolution_clock::now();
             cout << endl << "Dijkstra dla Listy Sąsiedztwa zajął " 
                  << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
@@ -165,13 +165,13 @@ void SP_MENU() {
             int src = choice_input("Podaj wierzchołek początkowy");
             int dest = choice_input("Podaj wierzchołek docelowy");
             auto im_start = chrono::high_resolution_clock::now();
-            SP::bellman_ford(im_graph, src, dest);
+            SP::bellman_ford(im_graph, src);
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Bellman-Ford dla Macierzy Incydencji zajął " 
                  << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
 
             auto al_start = chrono::high_resolution_clock::now();
-            SP::bellman_ford(al_graph, src, dest);
+            SP::bellman_ford(al_graph, src);
             auto al_stop = chrono::high_resolution_clock::now();
             cout << endl << "Bellman-Ford dla Listy Sąsiedztwa zajął " 
                  << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
@@ -234,13 +234,13 @@ void MF_MENU() {
             int src = choice_input("Podaj wierzchołek początkowy");
             int dest = choice_input("Podaj wierzchołek docelowy");
             auto im_start = chrono::high_resolution_clock::now();
-            SP::dijkstra(im_graph, src, dest);
+            // SP::dijkstra(im_graph, src, dest);
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Dijkstra dla Macierzy Incydencji zajął " 
                  << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
 
             auto al_start = chrono::high_resolution_clock::now();
-            SP::dijkstra(al_graph, src, dest);
+            // SP::dijkstra(al_graph, src, dest);
             auto al_stop = chrono::high_resolution_clock::now();
             cout << endl << "Dijkstra dla Listy Sąsiedztwa zajął " 
                  << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
@@ -249,13 +249,13 @@ void MF_MENU() {
             int src = choice_input("Podaj wierzchołek początkowy");
             int dest = choice_input("Podaj wierzchołek docelowy");
             auto im_start = chrono::high_resolution_clock::now();
-            SP::bellman_ford(im_graph, src, dest);
+            // SP::bellman_ford(im_graph, src, dest);
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Bellman-Ford dla Macierzy Incydencji zajął " 
                  << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
 
             auto al_start = chrono::high_resolution_clock::now();
-            SP::bellman_ford(al_graph, src, dest);
+            // SP::bellman_ford(al_graph, src, dest);
             auto al_stop = chrono::high_resolution_clock::now();
             cout << endl << "Bellman-Ford dla Listy Sąsiedztwa zajął " 
                  << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
