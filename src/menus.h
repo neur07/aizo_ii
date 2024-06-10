@@ -4,7 +4,9 @@
 #include <chrono>
 #include "MST.h"
 #include "SP.h"
+#include "MF.h"
 #include "utils.h"
+#include "FileLoader.h"
 
 using namespace std;
 
@@ -21,8 +23,9 @@ void problem_selection(){
 void MST_MENU(){
     // Inicjalizacja obu reprezentacji grafow
     int mst_choice = 0;
-    IMGraph im_graph;
-    ALGraph al_graph;
+    IMGraph* im_graph;
+    ALGraph* al_graph;
+    FileLoader file_loader("inputs");
     
     while(mst_choice != 5){
         printsep("Problem > MST:");
@@ -45,34 +48,35 @@ void MST_MENU(){
                 // Z pliku o wybranej nazwie
                 printsep("Problem > MST > Nowy graf > Plik:");
                 string name = str_choice_input("Nazwa pliku");
-                im_graph.load_from_file("inputs/" + name + ".txt");
-                al_graph.load_from_file("inputs/" + name + ".txt");
+                im_graph = file_loader.read_im(name);
+                al_graph = file_loader.read_al(name);
             }
             else{
                 // Losowe o podanych parametrach
                 printsep("Problem > MST > Nowy graf > Losowy:");
                 int vertices = choice_input("Podaj liczbę wierzchołków");
-                int edges = choice_input("Podaj liczbę krawędzi");
-                im_graph.generate_random_graph(vertices, edges);
-                al_graph.generate_random_graph(vertices, edges);
+                int density = choice_input("Podaj gęstość");
+                RawData data = generateGraphData(density / 100.0, vertices);
+                im_graph = new IMGraph(data.edgeCount, data.vertexCount, data.data);
+                al_graph = new ALGraph(data.edgeCount, data.vertexCount, data.data);
             }
             
         }
         else if(mst_choice == 2){
             // Wyswietlenie obu reprezentacji
-            im_graph.print();
-            al_graph.print();
+            im_graph->print();
+            al_graph->print();
         }
         else if(mst_choice == 3){
             printsep("Problem > MST > Prim:");
             // Wykonanie porownawcze
             auto im_start = chrono::high_resolution_clock::now();
-            MST::prim(im_graph);
+            MST::prim(im_graph*);
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Prim dla Macierzy Incydencji zajął " << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
 
             auto al_start = chrono::high_resolution_clock::now();
-            MST::prim(al_graph);
+            MST::prim(al_graph*);
             auto al_stop = chrono::high_resolution_clock::now();
             cout << endl << "Prim dla Listy Sąsiedztwa zajął " << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
         }
@@ -80,12 +84,12 @@ void MST_MENU(){
             printsep("Problem > MST > Kruskal:");
             // Wykonanie porownawcze
             auto im_start = chrono::high_resolution_clock::now();
-            MST::kruskal(im_graph);
+            MST::kruskal(im_graph*);
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Kruskal dla Macierzy Incydencji zajął " << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms";
             
             auto al_start = chrono::high_resolution_clock::now();
-            MST::kruskal(al_graph);
+            MST::kruskal(al_graph*);
             auto al_stop = chrono::high_resolution_clock::now();
             cout << endl << "Kruskal dla Listy Sąsiedztwa zajął " << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
         
@@ -97,8 +101,9 @@ void MST_MENU(){
 
 void SP_MENU() {
     int sp_choice = 0;
-    IMGraph im_graph(true);
-    ALGraph al_graph(true);
+    IMGraph* im_graph;
+    ALGraph* al_graph;
+    FileLoader file_loader("inputs");
 
     while (sp_choice != 5) {
         printsep("Problem > Shortest Path:");
@@ -121,35 +126,37 @@ void SP_MENU() {
                 // Z pliku o wybranej nazwie
                 printsep("Problem > Shortest Path > Nowy graf > Plik:");
                 string name = str_choice_input("Nazwa pliku");
-                im_graph.load_from_file("inputs/" + name + ".txt");
-                al_graph.load_from_file("inputs/" + name + ".txt");
+                im_graph = file_loader.read_im(name);
+                al_graph = file_loader.read_al(name);
             }
             else{
                 // Losowe o podanych parametrach
                 printsep("Problem > Shortest Path > Nowy graf > Losowy:");
                 int vertices = choice_input("Podaj liczbę wierzchołków");
-                int edges = choice_input("Podaj liczbę krawędzi");
-                im_graph.generate_random_graph(vertices, edges);
-                al_graph.generate_random_graph(vertices, edges);
+                int density = choice_input("Podaj gęstość");
+                RawData data = generateGraphData(density / 100.0, vertices);
+                im_graph = new IMGraph(data.edgeCount, data.vertexCount, data.data);
+                al_graph = new ALGraph(data.edgeCount, data.vertexCount, data.data);
             }
             
         }
         else if (sp_choice == 2) {
-            im_graph.print();
-            al_graph.print();
+            // Wyswietlenie obu reprezentacji
+            im_graph->print();
+            al_graph->print();
         }
         else if (sp_choice == 3) {
             printsep("Problem > Shortest Path > Dijkstry:");
             int src = choice_input("Podaj wierzchołek początkowy");
             int dest = choice_input("Podaj wierzchołek docelowy");
             auto im_start = chrono::high_resolution_clock::now();
-            SP::dijkstra(im_graph, src, dest);
+            SP::dijkstra(im_graph*, src, dest);
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Dijkstra dla Macierzy Incydencji zajął " 
                  << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
 
             auto al_start = chrono::high_resolution_clock::now();
-            SP::dijkstra(al_graph, src, dest);
+            SP::dijkstra(al_graph*, src, dest);
             auto al_stop = chrono::high_resolution_clock::now();
             cout << endl << "Dijkstra dla Listy Sąsiedztwa zajął " 
                  << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
@@ -159,13 +166,13 @@ void SP_MENU() {
             int src = choice_input("Podaj wierzchołek początkowy");
             int dest = choice_input("Podaj wierzchołek docelowy");
             auto im_start = chrono::high_resolution_clock::now();
-            SP::bellman_ford(im_graph, src, dest);
+            SP::bellman_ford(im_graph*, src, dest);
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Bellman-Ford dla Macierzy Incydencji zajął " 
                  << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
 
             auto al_start = chrono::high_resolution_clock::now();
-            SP::bellman_ford(al_graph, src, dest);
+            SP::bellman_ford(al_graph*, src, dest);
             auto al_stop = chrono::high_resolution_clock::now();
             cout << endl << "Bellman-Ford dla Listy Sąsiedztwa zajął " 
                  << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
@@ -182,8 +189,9 @@ void SP_MENU() {
 
 void MF_MENU() {
     int sp_choice = 0;
-    IMGraph im_graph(true);
-    ALGraph al_graph(true);
+    IMGraph* im_graph;
+    ALGraph* al_graph;
+    FileLoader file_loader("inputs");
 
     while (sp_choice != 5) {
         printsep("Problem > Maximum Flow:");
@@ -206,52 +214,39 @@ void MF_MENU() {
                 // Z pliku o wybranej nazwie
                 printsep("Problem > Maximum Flow > Nowy graf > Plik:");
                 string name = str_choice_input("Nazwa pliku");
-                im_graph.load_from_file("inputs/" + name + ".txt");
-                al_graph.load_from_file("inputs/" + name + ".txt");
+                im_graph = file_loader.read_im(name);
+                al_graph = file_loader.read_al(name);
             }
             else{
                 // Losowe o podanych parametrach
                 printsep("Problem > Maximum Flow > Nowy graf > Losowy:");
                 int vertices = choice_input("Podaj liczbę wierzchołków");
-                int edges = choice_input("Podaj liczbę krawędzi");
-                im_graph.generate_random_graph(vertices, edges);
-                al_graph.generate_random_graph(vertices, edges);
+                int density = choice_input("Podaj gęstość");
+                RawData data = generateGraphData(density / 100.0, vertices);
+                im_graph = new IMGraph(data.edgeCount, data.vertexCount, data.data);
+                al_graph = new ALGraph(data.edgeCount, data.vertexCount, data.data);
             }
             
         }
         else if (sp_choice == 2) {
-            im_graph.print();
-            al_graph.print();
+            // Wyswietlenie obu reprezentacji
+            im_graph->print();
+            al_graph->print();
         }
         else if (sp_choice == 3) {
             printsep("Problem > Maximum Flow > Ford-Fulkerson:");
             int src = choice_input("Podaj wierzchołek początkowy");
             int dest = choice_input("Podaj wierzchołek docelowy");
             auto im_start = chrono::high_resolution_clock::now();
-            SP::dijkstra(im_graph, src, dest);
+            MF::ford_fulkerson(im_graph* , src, dest);
             auto im_stop = chrono::high_resolution_clock::now();
             cout << endl << "Dijkstra dla Macierzy Incydencji zajął " 
                  << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
 
             auto al_start = chrono::high_resolution_clock::now();
-            SP::dijkstra(al_graph, src, dest);
+            MF::ford_fulkerson(al_graph*, src, dest);
             auto al_stop = chrono::high_resolution_clock::now();
             cout << endl << "Dijkstra dla Listy Sąsiedztwa zajął " 
-                 << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
-        }
-        else if (sp_choice == 4) {
-            int src = choice_input("Podaj wierzchołek początkowy");
-            int dest = choice_input("Podaj wierzchołek docelowy");
-            auto im_start = chrono::high_resolution_clock::now();
-            SP::bellman_ford(im_graph, src, dest);
-            auto im_stop = chrono::high_resolution_clock::now();
-            cout << endl << "Bellman-Ford dla Macierzy Incydencji zajął " 
-                 << chrono::duration_cast<chrono::microseconds>(im_stop - im_start).count() << " ms" << endl;
-
-            auto al_start = chrono::high_resolution_clock::now();
-            SP::bellman_ford(al_graph, src, dest);
-            auto al_stop = chrono::high_resolution_clock::now();
-            cout << endl << "Bellman-Ford dla Listy Sąsiedztwa zajął " 
                  << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
         }
         else if (sp_choice == 5) {

@@ -6,6 +6,7 @@ add_executable(
     src/main.cpp 
     src/menus.h 
     src/utils/utils.cpp 
+    src/utils/fileLoader.cpp 
     src/struct/Array.h 
     src/struct/EdgeHeap.cpp 
     src/struct/EdgeHeap.h 

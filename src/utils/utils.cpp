@@ -60,3 +60,61 @@ void generate_random_connected_graph(int vertices, int edges, int* src, int* des
         }
     }
 }
+
+RawData generateGraphData(float density, size_t vertices) {
+    srand(static_cast<unsigned int>(time(nullptr)));
+    int maxValue = 20;
+    size_t minEdgeCount = vertices;
+    size_t edgeCount = static_cast<size_t>((density * vertices * (vertices - 1)) / 2);
+    edgeCount = edgeCount > minEdgeCount ? edgeCount : minEdgeCount;
+    size_t dataSize = 3 * edgeCount;
+    size_t* data = new size_t[dataSize];
+
+    bool** connectionsExist = new bool*[vertices];
+    for (size_t i = 0; i < vertices; ++i) {
+        connectionsExist[i] = new bool[vertices]();
+    }
+
+    for (size_t i = 0; i < minEdgeCount - 1; ++i) {
+        data[3 * i] = i;
+        data[3 * i + 1] = i + 1;
+        data[3 * i + 2] = rand() % maxValue + 1;
+        connectionsExist[i][i + 1] = true;
+        connectionsExist[i + 1][i] = true;
+    }
+
+    data[3 * (minEdgeCount - 1)] = minEdgeCount - 1;
+    data[3 * (minEdgeCount - 1) + 1] = 0;
+    data[3 * (minEdgeCount - 1) + 2] = rand() % maxValue + 1;
+    connectionsExist[minEdgeCount - 1][0] = true;
+    connectionsExist[0][minEdgeCount - 1] = true;
+
+    for (size_t i = minEdgeCount; i < edgeCount; ++i) {
+        size_t start = rand() % vertices;
+        size_t end = rand() % vertices;
+
+        while (start == end || connectionsExist[start][end]) {
+            start = rand() % vertices;
+            end = rand() % vertices;
+        }
+
+        data[3 * i] = start;
+        data[3 * i + 1] = end;
+        data[3 * i + 2] = rand() % maxValue + 1;
+
+        connectionsExist[start][end] = true;
+        connectionsExist[end][start] = true;
+    }
+
+    for (size_t i = 0; i < vertices; ++i) {
+        delete[] connectionsExist[i];
+    }
+    delete[] connectionsExist;
+
+    RawData result;
+    result.data = data;
+    result.vertexCount = vertices;
+    result.edgeCount = edgeCount;
+
+    return result;
+}
