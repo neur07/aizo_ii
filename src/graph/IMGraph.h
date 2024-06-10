@@ -1,27 +1,30 @@
 #pragma once
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include "utils.h"
+#include <iomanip>
+
+using namespace std;
+
+enum class MatrixCell {
+    None,
+    Start,
+    End
+};
 
 class IMGraph {
-    int** incidence_matrix;
-    int edges;
-    int vertices;
-    bool directed;
-
-    void allocate_matrix();
-
 public:
-    IMGraph(bool dir = false);
+    IMGraph(size_t num_edges, size_t num_vertices, size_t* values);
     ~IMGraph();
-    void load_from_file(const std::string& filename);
-    void print_graph() const;
-    void generate_random_graph(int v, int e);
 
-    int get_vertices() const;
-    int get_edges() const;
-    int get_other_vertex(int u, int edge) const;
-    const int* get_incidence_row(int u) const;
-    bool is_directed() const { return directed; }
+    void print() const;
+    size_t get_num_vertices() const;
+    size_t get_num_edges() const;
+    MatrixCell** get_matrix() const;
+    size_t* get_values() const;
+    int get_weight(size_t u, size_t v) const;
+
+private:
+    size_t num_edges;
+    size_t num_vertices;
+    MatrixCell** matrix_handler;
+    size_t* edge_values;
 };

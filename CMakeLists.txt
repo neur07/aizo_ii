@@ -6,11 +6,17 @@ add_executable(
     src/main.cpp 
     src/menus.h 
     src/utils/utils.cpp 
+    src/struct/Array.h 
+    src/struct/EdgeHeap.cpp 
+    src/struct/EdgeHeap.h 
+    src/struct/Path.cpp 
+    src/struct/Path.h 
+    src/struct/PathEdge.h 
     src/graph/IMGraph.cpp 
     src/graph/ALGraph.cpp 
-    src/graph/Edges.cpp
     src/algorithm/MST.cpp
     src/algorithm/SP.cpp
+    src/algorithm/MF.cpp
     )
 
 target_include_directories(aizo_ii PRIVATE 

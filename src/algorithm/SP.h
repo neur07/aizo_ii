@@ -8,7 +8,4 @@ public:
     static void dijkstra(const IMGraph& graph, int src, int dest);
     static void bellman_ford(const ALGraph& graph, int src, int dest);
     static void bellman_ford(const IMGraph& graph, int src, int dest);
-
-private:
-    static void print_solution(int dist[], int vertices);
 };

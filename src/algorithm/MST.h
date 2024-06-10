@@ -10,7 +10,5 @@ public:
     static void kruskal(const IMGraph& graph);
 
 private:
-    static void sort_edges(Edge* edges, int edge_count);
-    static int find(int parent[], int i);
-    static void unite(int parent[], int rank[], int x, int y);
+    static void selectionSort(Edge* edges, size_t num_edges);
 };

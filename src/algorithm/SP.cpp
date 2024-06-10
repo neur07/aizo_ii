@@ -1,185 +1,199 @@
 #include "SP.h"
 #include <iostream>
 #include <limits>
+#include <chrono>
 
 using namespace std;
 
-void SP::dijkstra(const ALGraph& graph, int src, int dest) {
-    int vertices = graph.get_vertices();
-    int* dist = new int[vertices];
-    bool* sptSet = new bool[vertices];
+// Implementacja algorytmu Dijkstry dla grafu reprezentowanego listą sąsiedztwa
+void SP::dijkstra(const ALGraph& graph, int start, int end) {
+    auto start_time = chrono::high_resolution_clock::now(); // Start pomiaru czasu
 
-    for (int i = 0; i < vertices; ++i) {
-        dist[i] = numeric_limits<int>::max();
-        sptSet[i] = false;
+    size_t num_vertices = graph.get_vertex_count();
+    int* distance = new int[num_vertices];
+    bool* visited = new bool[num_vertices];
+
+    for (size_t i = 0; i < num_vertices; ++i) {
+        distance[i] = numeric_limits<int>::max();
+        visited[i] = false;
     }
 
-    dist[src] = 0;
+    distance[start] = 0;
 
-    for (int count = 0; count < vertices - 1; ++count) {
-        int u = -1;
-        for (int i = 0; i < vertices; ++i)
-            if (!sptSet[i] && (u == -1 || dist[i] < dist[u]))
-                u = i;
+    for (size_t count = 0; count < num_vertices - 1; ++count) {
+        int min = numeric_limits<int>::max(), minIndex = -1;
 
-        sptSet[u] = true;
-        Edge* edges = graph.get_edges(u);
-        int edge_count = graph.get_edge_count(u);
-        for (int i = 0; i < edge_count; ++i) {
-            int v = edges[i].dest;
-            int weight = edges[i].weight;
-            if (!sptSet[v] && dist[u] != numeric_limits<int>::max() && dist[u] + weight < dist[v]) {
-                dist[v] = dist[u] + weight;
+        for (size_t v = 0; v < num_vertices; ++v) {
+            if (!visited[v] && distance[v] <= min) {
+                min = distance[v];
+                minIndex = v;
             }
+        }
+
+        int u = minIndex;
+        visited[u] = true;
+
+        const Edge* edge = graph.get_neighbors(u);
+        while (edge != nullptr) {
+            int v = edge->end_vertex;
+            if (!visited[v] && distance[u] != numeric_limits<int>::max() && distance[u] + edge->value < distance[v]) {
+                distance[v] = distance[u] + edge->value;
+            }
+            edge = edge->next_edge;
         }
     }
 
-    print_solution(dist, vertices);
+    auto stop_time = chrono::high_resolution_clock::now(); // Koniec pomiaru czasu
+    auto duration = chrono::duration_cast<chrono::microseconds>(stop_time - start_time);
+    cout << "Czas działania algorytmu Dijkstry (Lista Sąsiedztwa): " << duration.count() << " mikrosekund" << endl;
 
-    delete[] dist;
-    delete[] sptSet;
+    for (size_t i = 0; i < num_vertices; ++i) {
+        cout << "Odległość od " << start << " do " << i << " wynosi " << distance[i] << endl;
+    }
+
+    delete[] distance;
+    delete[] visited;
 }
 
-void SP::dijkstra(const IMGraph& graph, int src, int dest) {
-    int vertices = graph.get_vertices(); // Liczba wierzchołkow
-    int edges = graph.get_edges(); // Liczba krawedzi
-    int* dist = new int[vertices];  // Odległości do kolejnych wierzchołkow
-    bool* sptSet = new bool[vertices]; 
+// Implementacja algorytmu Dijkstry dla grafu reprezentowanego macierzą incydencji
+void SP::dijkstra(const IMGraph& graph, int start, int end) {
+    auto start_time = chrono::high_resolution_clock::now(); // Start pomiaru czasu
 
-    for (int i = 0; i < vertices; ++i) {
-        dist[i] = numeric_limits<int>::max();
-        sptSet[i] = false;
+    size_t num_vertices = graph.get_num_vertices();
+    int* distance = new int[num_vertices];
+    bool* visited = new bool[num_vertices];
+
+    for (size_t i = 0; i < num_vertices; ++i) {
+        distance[i] = numeric_limits<int>::max();
+        visited[i] = false;
     }
 
-    dist[src] = 0;
+    distance[start] = 0;
 
-    for (int count = 0; count < vertices - 1; ++count) {
-        int u = -1;
-        for (int i = 0; i < vertices; ++i)
-            if (!sptSet[i] && (u == -1 || dist[i] < dist[u]))
-                u = i;
+    for (size_t count = 0; count < num_vertices - 1; ++count) {
+        int min = numeric_limits<int>::max(), minIndex = -1;
 
-        sptSet[u] = true;
-        const int* incidence_row = graph.get_incidence_row(u);
-        for (int j = 0; j < edges; ++j) {
-            if (incidence_row[j] != 0) {
-                int v = graph.get_other_vertex(u, j);
-                int weight = incidence_row[j];
-                if (!sptSet[v] && dist[u] != numeric_limits<int>::max() && dist[u] + weight < dist[v]) {
-                    dist[v] = dist[u] + weight;
-                }
+        for (size_t v = 0; v < num_vertices; ++v) {
+            if (!visited[v] && distance[v] <= min) {
+                min = distance[v];
+                minIndex = v;
+            }
+        }
+
+        int u = minIndex;
+        visited[u] = true;
+
+        for (size_t v = 0; v < num_vertices; ++v) {
+            int weight = graph.get_weight(u, v);
+            if (weight != -1 && !visited[v] && distance[u] != numeric_limits<int>::max() && distance[u] + weight < distance[v]) {
+                distance[v] = distance[u] + weight;
             }
         }
     }
 
-    print_solution(dist, vertices);
+    auto stop_time = chrono::high_resolution_clock::now(); // Koniec pomiaru czasu
+    auto duration = chrono::duration_cast<chrono::microseconds>(stop_time - start_time);
+    cout << "Czas działania algorytmu Dijkstry (Macierz Incydencji): " << duration.count() << " mikrosekund" << endl;
 
-    delete[] dist;
-    delete[] sptSet;
+    for (size_t i = 0; i < num_vertices; ++i) {
+        cout << "Odległość od " << start << " do " << i << " wynosi " << distance[i] << endl;
+    }
+
+    delete[] distance;
+    delete[] visited;
 }
 
-void SP::bellman_ford(const ALGraph& graph, int src, int dest) {
-    int vertices = graph.get_vertices();
-    int total_edges = 0;
-    for (int i = 0; i < vertices; ++i) {
-        total_edges += graph.get_edge_count(i);
-    }
+// Implementacja algorytmu Bellmana-Forda dla grafu reprezentowanego listą sąsiedztwa
+void SP::bellman_ford(const ALGraph& graph, int start, int dest) {
+    auto start_time = chrono::high_resolution_clock::now(); // Start pomiaru czasu
 
-    Edge* edges = new Edge[total_edges];
-    int edge_index = 0;
-    for (int i = 0; i < vertices; ++i) {
-        Edge* vertex_edges = graph.get_edges(i);
-        int edge_count = graph.get_edge_count(i);
-        for (int j = 0; j < edge_count; ++j) {
-            edges[edge_index++] = vertex_edges[j];
+    size_t num_vertices = graph.get_vertex_count();
+    size_t num_edges = graph.get_edge_count();
+
+    int* distance = new int[num_vertices];
+    for (size_t i = 0; i < num_vertices; ++i) {
+        distance[i] = numeric_limits<int>::max();
+    }
+    distance[start] = 0;
+
+    Edge* edges = new Edge[num_edges];
+    size_t index = 0;
+
+    for (size_t u = 0; u < num_vertices; ++u) {
+        const Edge* edge = graph.get_edges()[u];
+        while (edge != nullptr) {
+            edges[index++] = *edge;
+            edge = edge->next_edge;
         }
     }
 
-    int* dist = new int[vertices];
-    for (int i = 0; i < vertices; ++i) {
-        dist[i] = numeric_limits<int>::max();
-    }
-    dist[src] = 0;
-
-    for (int i = 1; i < vertices; ++i) {
-        for (int j = 0; j < total_edges; ++j) {
-            int u = edges[j].dest;
-            int v = edges[j].weight;
-            int weight = edges[j].weight;
-            if (dist[u] != numeric_limits<int>::max() && dist[u] + weight < dist[v]) {
-                dist[v] = dist[u] + weight;
+    for (size_t i = 1; i < num_vertices; ++i) {
+        for (size_t j = 0; j < num_edges; ++j) {
+            int u = edges[j].start_vertex;
+            int v = edges[j].end_vertex;
+            int weight = edges[j].value;
+            if (distance[u] != numeric_limits<int>::max() && distance[u] + weight < distance[v]) {
+                distance[v] = distance[u] + weight;
             }
         }
     }
 
-    for (int i = 0; i < total_edges; ++i) {
-        int u = edges[i].dest;
-        int v = edges[i].weight;
-        int weight = edges[i].weight;
-        if (dist[u] != numeric_limits<int>::max() && dist[u] + weight < dist[v]) {
-            printsep("Graf zawiera cykl o ujemnych wagach");
-            return;
-        }
+    auto stop_time = chrono::high_resolution_clock::now(); // Koniec pomiaru czasu
+    auto duration = chrono::duration_cast<chrono::microseconds>(stop_time - start_time);
+    cout << "Czas działania algorytmu Bellmana-Forda (Lista Sąsiedztwa): " << duration.count() << " mikrosekund" << endl;
+
+    for (size_t i = 0; i < num_vertices; ++i) {
+        cout << "Odległość od " << start << " do " << i << " wynosi " << distance[i] << endl;
     }
 
-    print_solution(dist, vertices);
-
+    delete[] distance;
     delete[] edges;
-    delete[] dist;
 }
 
-void SP::bellman_ford(const IMGraph& graph, int src, int dest) {
-    int vertices = graph.get_vertices();
-    int edges = graph.get_edges();
-    Edge* edge_list = new Edge[edges];
+// Implementacja algorytmu Bellmana-Forda dla grafu reprezentowanego macierzą incydencji
+void SP::bellman_ford(const IMGraph& graph, int start, int dest) {
+    auto start_time = chrono::high_resolution_clock::now(); // Start pomiaru czasu
 
-    int edge_index = 0;
-    for (int i = 0; i < vertices; ++i) {
-        for (int j = 0; j < edges; ++j) {
-            if (graph.get_incidence_row(i)[j] != 0) {
-                edge_list[edge_index].dest = i;
-                edge_list[edge_index].weight = graph.get_incidence_row(i)[j];
-                ++edge_index;
+    size_t num_vertices = graph.get_num_vertices();
+    size_t num_edges = graph.get_num_edges();
+
+    int* distance = new int[num_vertices];
+    for (size_t i = 0; i < num_vertices; ++i) {
+        distance[i] = numeric_limits<int>::max();
+    }
+    distance[start] = 0;
+
+    Edge* edges = new Edge[num_edges];
+    size_t index = 0;
+
+    for (size_t u = 0; u < num_vertices; ++u) {
+        for (size_t v = 0; v < num_vertices; ++v) {
+            int weight = graph.get_weight(u, v);
+            if (weight != -1) {
+                edges[index++] = {u, v, static_cast<size_t>(weight)};
             }
         }
     }
 
-    int* dist = new int[vertices];
-    for (int i = 0; i < vertices; ++i) {
-        dist[i] = numeric_limits<int>::max();
-    }
-    dist[src] = 0;
-
-    for (int i = 1; i < vertices; ++i) {
-        for (int j = 0; j < edge_index; ++j) {
-            int u = edge_list[j].dest;
-            int v = graph.get_other_vertex(u, j);
-            int weight = edge_list[j].weight;
-            if (dist[u] != numeric_limits<int>::max() && dist[u] + weight < dist[v]) {
-                dist[v] = dist[u] + weight;
+    for (size_t i = 1; i < num_vertices; ++i) {
+        for (size_t j = 0; j < num_edges; ++j) {
+            int u = edges[j].start_vertex;
+            int v = edges[j].end_vertex;
+            int weight = edges[j].value;
+            if (distance[u] != numeric_limits<int>::max() && distance[u] + weight < distance[v]) {
+                distance[v] = distance[u] + weight;
             }
         }
     }
 
-    for (int i = 0; i < edge_index; ++i) {
-        int u = edge_list[i].dest;
-        int v = graph.get_other_vertex(u, i);
-        int weight = edge_list[i].weight;
-        if (dist[u] != numeric_limits<int>::max() && dist[u] + weight < dist[v]) {
-            printsep("Graf zawiera cykl o ujemnych wagach");
-            return;
-        }
+    auto stop_time = chrono::high_resolution_clock::now(); // Koniec pomiaru czasu
+    auto duration = chrono::duration_cast<chrono::microseconds>(stop_time - start_time);
+    cout << "Czas działania algorytmu Bellmana-Forda (Macierz Incydencji): " << duration.count() << " mikrosekund" << endl;
+
+    for (size_t i = 0; i < num_vertices; ++i) {
+        cout << "Odległość od " << start << " do " << i << " wynosi " << distance[i] << endl;
     }
 
-    print_solution(dist, vertices);
-
-    delete[] edge_list;
-    delete[] dist;
-}
-
-void SP::print_solution(int dist[], int vertices) {
-    printsep("Wierz. | Odległość");
-    for (int i = 0; i < vertices; i++) {
-        printf("%6d | %9d\n", i, dist[i]);
-    }
+    delete[] distance;
+    delete[] edges;
 }

@@ -1,90 +1,73 @@
 #include "ALGraph.h"
 
-ALGraph::ALGraph(bool dir) : directed(dir) {
-    adjacency_list = nullptr;
+using namespace std;
+
+ALGraph::ALGraph(size_t edge_count, size_t vertex_count, size_t* data)
+        : edge_count(edge_count), vertex_count(vertex_count) {
+    edges = new Edge*[vertex_count];
+    for (size_t i = 0; i < vertex_count; ++i) {
+        edges[i] = nullptr;
+    }
+
+    size_t data_count = 3 * edge_count;
+    for (size_t i = 0; i < data_count; i += 3) {
+        size_t start = data[i];
+        size_t end = data[i + 1];
+        size_t value = data[i + 2];
+
+        Edge* new_edge = new Edge(start, end, value, nullptr, nullptr);
+        if (edges[start] == nullptr) {
+            edges[start] = new_edge;
+        } else {
+            Edge* tmp = edges[start];
+            while (tmp->next_edge != nullptr) {
+                tmp = tmp->next_edge;
+            }
+            tmp->next_edge = new_edge;
+            new_edge->previous_edge = tmp;
+        }
+    }
 }
 
 ALGraph::~ALGraph() {
-    if (adjacency_list) {
-        for (int i = 0; i < vertices; ++i) {
-            delete adjacency_list[i];
-        }
-        delete[] adjacency_list;
-    }
-}
-
-void ALGraph::add_edge(int src, int dest, int weight) {
-    if (src < vertices && dest < vertices) {
-        adjacency_list[src]->add_edge(dest, weight);
-        if (!directed) {
-            adjacency_list[dest]->add_edge(src, weight);
+    for (size_t i = 0; i < vertex_count; ++i) {
+        Edge* edge = edges[i];
+        while (edge != nullptr) {
+            Edge* to_delete = edge;
+            edge = edge->next_edge;
+            delete to_delete;
         }
     }
+    delete[] edges;
 }
 
-void ALGraph::print_graph() const {
-    printf("\nGraf %sskierowany (Lista sąsiedztwa):\n\n", directed ? "" : "nie");
-    for (int i = 0; i < vertices; i++) {
-        adjacency_list[i]->print_edges();
-    }
-}
-
-void ALGraph::load_from_file(const std::string& filename) {
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        std::cerr << "Nie można otworzyć pliku!" << std::endl;
-        return;
-    }
-
-    int edges;
-    file >> edges >> vertices;
-
-    adjacency_list = new Edges*[vertices];
-    for (int i = 0; i < vertices; ++i) {
-        adjacency_list[i] = new Edges(i);
-    }
-
-    int start, end, weight;
-    for (int i = 0; i < edges; i++) {
-        file >> start >> end >> weight;
-        if (start >= 0 && start < vertices && end >= 0 && end < vertices) {
-            add_edge(start, end, weight);
+void ALGraph::print() const {
+    for (size_t i = 0; i < vertex_count; ++i) {
+        cout << setw(2) << i << " --> ";
+        Edge* edge = edges[i];
+        while (edge != nullptr) {
+            cout << setw(2) << edge->end_vertex << '[' << setw(2) << edge->value << "] | ";
+            edge = edge->next_edge;
         }
+        cout << endl;
     }
-    printsep("Pomyślnie załadowano Listę sąsiedztwa");
 }
 
-void ALGraph::generate_random_graph(int v, int e) {
-    vertices = v;
-    
-    adjacency_list = new Edges*[vertices];
-    for (int i = 0; i < vertices; ++i) {
-        adjacency_list[i] = new Edges(i);
+size_t ALGraph::get_vertex_count() const {
+    return vertex_count;
+}
+
+size_t ALGraph::get_edge_count() const {
+    return edge_count;
+}
+
+Edge** ALGraph::get_edges() const {
+    return edges;
+}
+
+const Edge* ALGraph::get_neighbors(size_t index) const {
+    if (index < vertex_count) {
+        return edges[index];
     }
-
-    int* src = new int[e];
-    int* dest = new int[e];
-    int* weights = new int[e];
-
-    generate_random_connected_graph(vertices, e, src, dest, weights);
-
-    for (int i = 0; i < e; ++i) {
-        add_edge(src[i], dest[i], weights[i]);
-    }
-
-    delete[] src;
-    delete[] dest;
-    delete[] weights;
-}
-
-int ALGraph::get_vertices() const {
-    return vertices;
-}
-
-Edge* ALGraph::get_edges(int u) const {
-    return adjacency_list[u]->get_edges();
-}
-
-int ALGraph::get_edge_count(int u) const {
-    return adjacency_list[u]->get_count();
+    return nullptr;
 }

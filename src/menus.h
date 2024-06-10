@@ -4,6 +4,7 @@
 #include <chrono>
 #include "MST.h"
 #include "SP.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -23,15 +24,14 @@ void MST_MENU(){
     IMGraph im_graph;
     ALGraph al_graph;
     
-    while(mst_choice != 6){
+    while(mst_choice != 5){
         printsep("Problem > MST:");
         cout << endl;
         cout << "1) Nowy graf" << endl;
         cout << "2) Wyświetl graf" << endl;
         cout << "3) Algorytm Prima" << endl;
         cout << "4) Algorytm Kruskala" << endl;
-        cout << "5) Pełne badanie" << endl;
-        cout << "6) Powrot do menu glownego" << endl;
+        cout << "5) Powrot do menu glownego" << endl;
         mst_choice = choice_input();
 
         if(mst_choice == 1){
@@ -60,8 +60,8 @@ void MST_MENU(){
         }
         else if(mst_choice == 2){
             // Wyswietlenie obu reprezentacji
-            im_graph.print_graph();
-            al_graph.print_graph();
+            im_graph.print();
+            al_graph.print();
         }
         else if(mst_choice == 3){
             printsep("Problem > MST > Prim:");
@@ -90,12 +90,7 @@ void MST_MENU(){
             cout << endl << "Kruskal dla Listy Sąsiedztwa zajął " << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
         
         }
-        else if(mst_choice == 5){
-            // Rozne stopnie wypelnienia
-
-            // 
-        }
-        else if(mst_choice == 6) break;
+        else if(mst_choice == 5) break;
         else cout << endl << "Wybrano nieprawidłową opcję. Sprobuj ponownie." << endl;
     }
 }
@@ -105,15 +100,14 @@ void SP_MENU() {
     IMGraph im_graph(true);
     ALGraph al_graph(true);
 
-    while (sp_choice != 6) {
+    while (sp_choice != 5) {
         printsep("Problem > Shortest Path:");
         cout << endl;
         cout << "1) Nowy graf" << endl;
         cout << "2) Wyświetl graf" << endl;
         cout << "3) Algorytm Dijkstry" << endl;
         cout << "4) Algorytm Forda-Bellmana" << endl;
-        cout << "5) Pełne badanie" << endl;
-        cout << "6) Powrót do menu głównego" << endl;
+        cout << "5) Powrót do menu głównego" << endl;
         sp_choice = choice_input();
 
         if(sp_choice == 1){
@@ -141,8 +135,8 @@ void SP_MENU() {
             
         }
         else if (sp_choice == 2) {
-            im_graph.print_graph();
-            al_graph.print_graph();
+            im_graph.print();
+            al_graph.print();
         }
         else if (sp_choice == 3) {
             printsep("Problem > Shortest Path > Dijkstry:");
@@ -176,7 +170,7 @@ void SP_MENU() {
             cout << endl << "Bellman-Ford dla Listy Sąsiedztwa zajął " 
                  << chrono::duration_cast<chrono::microseconds>(al_stop - al_start).count() << " ms" << endl;
         }
-        else if (sp_choice == 6) {
+        else if (sp_choice == 5) {
             break;
         }
         else {
@@ -226,8 +220,8 @@ void MF_MENU() {
             
         }
         else if (sp_choice == 2) {
-            im_graph.print_graph();
-            al_graph.print_graph();
+            im_graph.print();
+            al_graph.print();
         }
         else if (sp_choice == 3) {
             printsep("Problem > Maximum Flow > Ford-Fulkerson:");

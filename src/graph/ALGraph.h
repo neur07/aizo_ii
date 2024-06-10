@@ -1,24 +1,35 @@
 #pragma once
-#include "Edges.h"
+
 #include <iostream>
-#include <fstream>
-#include <utils.h>
+#include <iomanip>
+
+using namespace std;
+
+struct Edge {
+    size_t start_vertex;
+    size_t end_vertex;
+    size_t value;
+    Edge* next_edge;
+    Edge* previous_edge;
+
+    Edge(size_t start, size_t end, size_t val, Edge* next = nullptr, Edge* prev = nullptr)
+        : start_vertex(start), end_vertex(end), value(val), next_edge(next), previous_edge(prev) {}
+};
 
 class ALGraph {
-    Edges** adjacency_list;
-    int vertices;
-    bool directed;
-
 public:
-    ALGraph(bool dir = false);
+    ALGraph(size_t edge_count, size_t vertex_count, size_t* data);
     ~ALGraph();
-    void add_edge(int src, int dest, int weight);
-    void print_graph() const;
-    void load_from_file(const std::string& filename);
-    void generate_random_graph(int v, int e);
 
-    int get_vertices() const;
-    Edge* get_edges(int u) const;
-    int get_edge_count(int u) const;
-    bool is_directed() const { return directed; }
+    void print() const;
+    size_t get_vertex_count() const;
+    size_t get_edge_count() const;
+    Edge** get_edges() const;
+    const Edge* get_neighbors(size_t index) const;
+
+private:
+    size_t edge_count;
+    size_t vertex_count;
+    Edge** edges;
 };
+
