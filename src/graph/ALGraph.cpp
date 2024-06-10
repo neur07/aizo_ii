@@ -43,13 +43,13 @@ ALGraph::~ALGraph() {
 
 void ALGraph::print() const {
     for (size_t i = 0; i < vertex_count; ++i) {
-        cout << setw(2) << i << " --> ";
+        printf("%2zu --> ", i);
         Edge* edge = edges[i];
         while (edge != nullptr) {
-            cout << setw(2) << edge->end_vertex << '[' << setw(2) << edge->value << "] | ";
+            printf("%2zu[%2d] | ", edge->end_vertex, edge->value);
             edge = edge->next_edge;
         }
-        cout << endl;
+        printf("\n");
     }
 }
 

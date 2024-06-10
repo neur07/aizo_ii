@@ -33,25 +33,23 @@ IMGraph::~IMGraph() {
 }
 
 void IMGraph::print() const {
-    cout << "    ";
+    printf("    ");
     for (size_t i = 0; i < num_edges; ++i) {
-        cout << setw(2) << i << "   ";
+        printf("%2zu   ", i);
     }
-    cout << endl;
-
+    printf("\n");
     for (size_t i = 0; i < num_vertices; ++i) {
-        cout << setw(2) << i << "  ";
+        printf("%2zu  ", i);
         for (size_t j = 0; j < num_edges; ++j) {
-            cout << setw(2) << static_cast<int>(matrix_handler[i][j]) << " | ";
+            printf("%2d | ", static_cast<int>(matrix_handler[i][j]));
         }
-        cout << endl;
+        printf("\n");
     }
-
-    cout << " w  ";
+    printf(" w  ");
     for (size_t i = 0; i < num_edges; ++i) {
-        cout << setw(2) << edge_values[i] << " | ";
+        printf("%2d | ", edge_values[i]);
     }
-    cout << endl;
+    printf("\n");
 }
 
 size_t IMGraph::get_num_vertices() const {
